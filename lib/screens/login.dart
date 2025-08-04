@@ -82,9 +82,9 @@ class _LoginScreenState extends State<LoginScreen>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: const Color(0xff131313),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Color(0xFFdccf7b),),
       ),
       child: TextFormField(
         controller: controller,
@@ -132,14 +132,14 @@ class _LoginScreenState extends State<LoginScreen>
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Colors.blue, width: 2),
+            borderSide: const BorderSide(color: Color(0xFFdccf7b), width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: const BorderSide(color: Colors.red, width: 1),
           ),
           filled: true,
-          fillColor: Colors.grey[50],
+          fillColor: Colors.black,
           contentPadding: EdgeInsets.symmetric(
             horizontal: ScreenUtil.unitHeight * 24,
             vertical: ScreenUtil.unitHeight * 24,
@@ -295,7 +295,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xff131313),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -317,15 +317,11 @@ class _LoginScreenState extends State<LoginScreen>
                             width: ScreenUtil.unitHeight * 100,
                             height: ScreenUtil.unitHeight * 100,
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Colors.blue, Colors.blueAccent],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
+                              color: Color(0xFFdccf7b),
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.blue.withOpacity(0.3),
+                                  color: Color(0xFFdccf7b).withOpacity(0.3),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
@@ -333,7 +329,7 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                             child: Icon(
                               Icons.lock_outline,
-                              color: Colors.white,
+                              color: const Color(0xff131313),
                               size: ScreenUtil.unitHeight * 50,
                             ),
                           ),
@@ -346,7 +342,7 @@ class _LoginScreenState extends State<LoginScreen>
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Color(0xFFdccf7b),
                           ),
                         ),
 
@@ -416,8 +412,8 @@ class _LoginScreenState extends State<LoginScreen>
                               _buildButton(
                                 text: 'Sign In',
                                 onPressed: _handleLogin,
-                                backgroundColor: Colors.blue,
-                                textColor: Colors.white,
+                                backgroundColor: Color(0xFFdccf7b),
+                                textColor: Colors.black,
                                 isLoading: _isLoading,
                               ),
                             ],

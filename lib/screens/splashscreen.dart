@@ -90,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xff131313),
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -103,15 +103,11 @@ class _SplashScreenState extends State<SplashScreen>
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Colors.blue, Colors.blueAccent],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    color: Color(0xFFdccf7b),
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.3),
+                        color: Color(0xFFdccf7b).withOpacity(0.3),
                         blurRadius: 30,
                         offset: const Offset(0, 15),
                       ),
@@ -131,7 +127,7 @@ class _SplashScreenState extends State<SplashScreen>
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Colors.white,
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -154,7 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
                   height: 40,
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFdccf7b)),
                   ),
                 ),
               ],

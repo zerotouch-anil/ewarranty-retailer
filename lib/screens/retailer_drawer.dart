@@ -14,12 +14,12 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-  int _selectedIndex = 2; 
+  int _selectedIndex = 0; 
 
   final List<Widget> _pages = [
-    RetailerViewCustomers(),
-    CategoriesComponent(),
     RetailerDashboard(),
+    RetailerViewCustomers(),
+    // CategoriesComponent(),
     HistoryData(),
     RetailerProfileScreen(),
   ];
@@ -83,48 +83,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         bottom: ScreenUtil.unitHeight * 4,
                       ),
                       child: Icon(
-                        Icons.people_outline_rounded,
-                        size: ScreenUtil.unitHeight * 24,
-                      ),
-                    ),
-                    activeIcon: Padding(
-                      padding: EdgeInsets.only(
-                        bottom: ScreenUtil.unitHeight * 4,
-                      ),
-                      child: Icon(
-                        Icons.people_rounded,
-                        size: ScreenUtil.unitHeight * 24,
-                      ),
-                    ),
-                    label: 'Customer',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: EdgeInsets.only(
-                        bottom: ScreenUtil.unitHeight * 4,
-                      ),
-                      child: Icon(
-                        Icons.person_add_outlined,
-                        size: ScreenUtil.unitHeight * 24,
-                      ),
-                    ),
-                    activeIcon: Padding(
-                      padding: EdgeInsets.only(
-                        bottom: ScreenUtil.unitHeight * 4,
-                      ),
-                      child: Icon(
-                        Icons.person_add_rounded,
-                        size: ScreenUtil.unitHeight * 24,
-                      ),
-                    ),
-                    label: 'Add Customer',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: EdgeInsets.only(
-                        bottom: ScreenUtil.unitHeight * 4,
-                      ),
-                      child: Icon(
                         Icons.dashboard_outlined,
                         size: ScreenUtil.unitHeight * 24,
                       ),
@@ -140,6 +98,49 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     ),
                     label: 'Dashboard',
                   ),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: EdgeInsets.only(
+                        bottom: ScreenUtil.unitHeight * 4,
+                      ),
+                      child: Icon(
+                        Icons.people_outline_rounded,
+                        size: ScreenUtil.unitHeight * 24,
+                      ),
+                    ),
+                    activeIcon: Padding(
+                      padding: EdgeInsets.only(
+                        bottom: ScreenUtil.unitHeight * 4,
+                      ),
+                      child: Icon(
+                        Icons.people_rounded,
+                        size: ScreenUtil.unitHeight * 24,
+                      ),
+                    ),
+                    label: 'Customer',
+                  ),
+                  // BottomNavigationBarItem(
+                  //   icon: Padding(
+                  //     padding: EdgeInsets.only(
+                  //       bottom: ScreenUtil.unitHeight * 4,
+                  //     ),
+                  //     child: Icon(
+                  //       Icons.person_add_outlined,
+                  //       size: ScreenUtil.unitHeight * 24,
+                  //     ),
+                  //   ),
+                  //   activeIcon: Padding(
+                  //     padding: EdgeInsets.only(
+                  //       bottom: ScreenUtil.unitHeight * 4,
+                  //     ),
+                  //     child: Icon(
+                  //       Icons.person_add_rounded,
+                  //       size: ScreenUtil.unitHeight * 24,
+                  //     ),
+                  //   ),
+                  //   label: 'Add Customer',
+                  // ),
+                  
                   BottomNavigationBarItem(
                     icon: Padding(
                       padding: EdgeInsets.only(

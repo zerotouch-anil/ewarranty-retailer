@@ -239,16 +239,18 @@ class _HistoryDataState extends State<HistoryData> {
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.deepPurple.withOpacity(0.3),
-                                  ),
+                                  border: Border.all(color: Color(0xFFdccf7b)),
                                   borderRadius: BorderRadius.circular(8),
-                                  color: Colors.white,
+                                  color: const Color(0xff131313),
                                 ),
 
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.calendar_today, size: 16),
+                                    const Icon(
+                                      Icons.calendar_today,
+                                      size: 16,
+                                      color: Color(0xFFdccf7b),
+                                    ),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Column(
@@ -265,9 +267,10 @@ class _HistoryDataState extends State<HistoryData> {
                                           ),
                                           Text(
                                             _formatDateShort(_startDate),
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
+                                              color: Colors.grey[600],
                                             ),
                                           ),
                                         ],
@@ -288,15 +291,17 @@ class _HistoryDataState extends State<HistoryData> {
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.deepPurple.withOpacity(0.3),
-                                  ),
+                                  border: Border.all(color: Color(0xFFdccf7b)),
                                   borderRadius: BorderRadius.circular(8),
-                                  color: Colors.white,
+                                  color: const Color(0xff131313),
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.calendar_today, size: 16),
+                                    const Icon(
+                                      Icons.calendar_today,
+                                      size: 16,
+                                      color: Color(0xFFdccf7b),
+                                    ),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Column(
@@ -313,9 +318,10 @@ class _HistoryDataState extends State<HistoryData> {
                                           ),
                                           Text(
                                             _formatDateShort(_endDate),
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
+                                              color: Colors.grey[600],
                                             ),
                                           ),
                                         ],
@@ -337,14 +343,14 @@ class _HistoryDataState extends State<HistoryData> {
                 // Transaction Type Filter Row
                 Row(
                   children: [
-                    const Icon(Icons.filter_list, color: Colors.deepPurple),
+                    const Icon(Icons.filter_list, color: Color(0xFFdccf7b)),
                     const SizedBox(width: 8),
                     const Text(
                       'Filter by ',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
-                        color: Colors.white
+                        color: Color(0xFFdccf7b),
                       ),
                     ),
 
@@ -354,11 +360,9 @@ class _HistoryDataState extends State<HistoryData> {
                         height: 38,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.deepPurple.withOpacity(0.3),
-                          ),
+                          border: Border.all(color: Color(0xFFdccf7b)),
                           borderRadius: BorderRadius.circular(8),
-                          color: Colors.white,
+                          color: const Color(0xff131313),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
@@ -374,7 +378,7 @@ class _HistoryDataState extends State<HistoryData> {
                                       style: TextStyle(
                                         color:
                                             option == 'ALL'
-                                                ? Colors.black87
+                                                ? Colors.grey[600]
                                                 : _getTransactionTypeColor(
                                                   option,
                                                 ),
@@ -457,10 +461,10 @@ class _HistoryDataState extends State<HistoryData> {
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [Colors.white, Colors.grey[50]!],
+                                color: const Color(0xff131313),
+                                border: Border.all(
+                                  color: Color(0xFFdccf7b),
+                                  width:1.0,
                                 ),
                               ),
                               child: Padding(
@@ -602,7 +606,7 @@ class _HistoryDataState extends State<HistoryData> {
                                     Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[100],
+                                        color: Colors.grey[600],
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Row(
@@ -610,7 +614,7 @@ class _HistoryDataState extends State<HistoryData> {
                                           const Icon(
                                             Icons.schedule,
                                             size: 16,
-                                            color: Colors.grey,
+                                            color: Colors.white,
                                           ),
                                           const SizedBox(width: 8),
                                           Text(
@@ -618,7 +622,7 @@ class _HistoryDataState extends State<HistoryData> {
                                               history.transactionDate,
                                             ),
                                             style: TextStyle(
-                                              color: Colors.grey[600],
+                                              color: Colors.white,
                                               fontSize: 12,
                                             ),
                                           ),
@@ -663,7 +667,7 @@ class _HistoryDataState extends State<HistoryData> {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: Colors.white,
                 ),
               ),
             ],

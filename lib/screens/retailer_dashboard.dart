@@ -865,26 +865,27 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: const Color(0xff131313),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           title: const Text(
             'Logout',
             style: TextStyle(
-              color: Color(0xFF0D47A1),
+              color: Color(0xFFdccf7b),
               fontWeight: FontWeight.bold,
             ),
           ),
           content: const Text(
             'Are you sure you want to logout?',
-            style: TextStyle(color: Color(0xFF1565C0)),
+            style: TextStyle(color: Color(0xFFdccf7b),),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text(
                 'Cancel',
-                style: TextStyle(color: Color(0xFF1565C0)),
+                style: TextStyle(color: Colors.white),
               ),
             ),
             ElevatedButton(
