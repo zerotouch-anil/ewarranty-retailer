@@ -11,7 +11,8 @@ class ProductDetailsScreen extends StatefulWidget {
   final List<PercentItem> percentList;
   final Future<List<Brand>> brandsFuture;
 
-  ProductDetailsScreen({
+  const ProductDetailsScreen({
+    super.key,
     required this.data,
     required this.invoiceData,
     required this.warrantyData,
@@ -25,12 +26,42 @@ class ProductDetailsScreen extends StatefulWidget {
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  static const Color _goldenColor = Color(0xFFdccf7b);
+  
   Brand? selectedBrand;
   int? selectedDuration;
+  List<Brand>? _cachedBrands;
+  final _purchasePriceController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _purchasePriceController.text = widget.data['purchasePrice']?.toString() ?? '';
+    _loadBrands();
+  }
+
+  @override
+  void dispose() {
+    _purchasePriceController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadBrands() async {
+    try {
+      _cachedBrands = await widget.brandsFuture;
+      if (mounted && widget.data['brandId'] != null) {
+        selectedBrand = _cachedBrands?.firstWhere(
+          (brand) => brand.brandId == widget.data['brandId'],
+          orElse: () => _cachedBrands!.first,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error loading brands: $e');
+    }
+  }
 
   void _checkFormValidity() {
-    final isValid =
-        widget.data['brandId'] != null &&
+    final isValid = widget.data['brandId'] != null &&
         widget.data['purchasePrice'] != null &&
         widget.data['orignalWarranty'] != null &&
         widget.invoiceData['invoiceDate'] != null &&
@@ -44,169 +75,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             _buildBrandDropdown(),
-            _buildSimpleField(
-              'Purchase Price',
-              'purchasePrice',
-              TextInputType.number,
-            ),
+            _buildPurchasePriceField(),
             _buildOriginalWarrantyDropdown(),
             _buildDatePicker(),
-
-            // _buildSimpleField('Product Name', 'modelName'),
-            // _buildSimpleField(
-            //   'Serial Number',
-            //   'serialNumber',
-            //   TextInputType.text,
-            // ),
-            if (_isCalculationDataAvailable()) ...[
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerLeft,
-
-                child: const Text(
-                  "Details",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Company Warranty & Invoice Date Card
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailRow(
-                        Icons.verified,
-                        "Company Warranty",
-                        widget.data["orignalWarranty"],
-                      ),
-                      const SizedBox(height: 8),
-                      _buildDetailRow(
-                        Icons.calendar_today,
-                        "Invoice Date",
-                        widget.invoiceData["invoiceDate"] is DateTime
-                            ? DateFormat(
-                              'yyyy-MM-dd',
-                            ).format(widget.invoiceData["invoiceDate"])
-                            : 'Invalid date',
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Extended Warranty",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              ...widget.percentList.map((item) {
-                if (!item.isActive) return const SizedBox.shrink();
-
-                final price =
-                    double.tryParse(widget.data["purchasePrice"] ?? "0") ?? 0;
-                final calculatedAmount = (price * item.percent) / 100;
-
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          color: Colors.blueGrey,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-
-                        // Duration Text
-                        Text(
-                          "${item.duration} Month${item.duration > 1 ? 's' : ''}",
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const Spacer(),
-
-                        // Value Text
-                        Text(
-                          "₹${calculatedAmount.toStringAsFixed(2)}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-
-                        // Button changes based on selection
-                        if (selectedDuration == item.duration)
-                          ElevatedButton(
-                            onPressed: null, // Disabled
-                            child: const Text("Added"),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              textStyle: const TextStyle(fontSize: 14),
-                            ),
-                          )
-                        else
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              setState(() {
-                                selectedDuration = item.duration;
-                                widget.warrantyData['warrantyPeriod'] =
-                                    item.duration;
-                                widget.warrantyData['premiumAmount'] =
-                                    calculatedAmount;
-                              });
-                              _checkFormValidity();
-                            },
-                            icon: const Icon(
-                              Icons.add,
-                              size: 16,
-                              color: Colors.white,
-                            ),
-                            label: const Text(
-                              "Add",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green.shade600,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              textStyle: const TextStyle(fontSize: 14),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-            ],
+            if (_isCalculationDataAvailable()) ..._buildCalculationSection(),
           ],
         ),
       ),
@@ -214,52 +90,136 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Widget _buildBrandDropdown() {
-    return FutureBuilder<List<Brand>>(
-      future: widget.brandsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Text("Error loading brands: ${snapshot.error}");
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text("No brands available");
-        } else {
-          final brands = snapshot.data!;
-          return Padding(
-            padding: EdgeInsets.only(bottom: 16),
-            child: DropdownButtonFormField<Brand>(
-              decoration: const InputDecoration(
-                labelText: "Brand",
-                border: OutlineInputBorder(),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: FutureBuilder<List<Brand>>(
+        future: widget.brandsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: CircularProgressIndicator(color: _goldenColor),
               ),
-              value: selectedBrand,
-              isExpanded: true,
-              items:
-                  brands.map((brand) {
-                    return DropdownMenuItem<Brand>(
-                      value: brand,
-                      child: Text(brand.brandName),
-                    );
-                  }).toList(),
-              onChanged: (Brand? brand) {
+            );
+          }
+          
+          if (snapshot.hasError) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.red),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                "Error loading brands: ${snapshot.error}",
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+          
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border.all(color: _goldenColor),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                "No brands available",
+                style: TextStyle(color: _goldenColor),
+              ),
+            );
+          }
+
+          final brands = snapshot.data!;
+          return DropdownButtonFormField<Brand>(
+            decoration: InputDecoration(
+              labelText: "Brand",
+              labelStyle: const TextStyle(color: _goldenColor),
+              border: OutlineInputBorder(
+                borderSide: const BorderSide(color: _goldenColor),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: _goldenColor),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: _goldenColor, width: 2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              filled: true,
+              fillColor: _goldenColor.withOpacity(0.1),
+            ),
+            value: selectedBrand,
+            isExpanded: true,
+            dropdownColor:   Color.fromARGB(255, 79, 107, 117),
+            icon: const Icon(Icons.arrow_drop_down, color: _goldenColor),
+            style: const TextStyle(color: _goldenColor, fontSize: 16),
+            items: brands.map((brand) {
+              return DropdownMenuItem<Brand>(
+                value: brand,
+                child: Text(
+                  brand.brandName,
+                  style: const TextStyle(color: _goldenColor),
+                ),
+              );
+            }).toList(),
+            onChanged: (Brand? brand) {
+              if (brand != null) {
                 setState(() {
                   selectedBrand = brand;
-                  widget.data['brandName'] = brand!.brandName;
+                  widget.data['brandName'] = brand.brandName;
                   widget.data['brandId'] = brand.brandId;
                 });
-              },
-            ),
+                _checkFormValidity();
+              }
+            },
           );
-        }
-      },
+        },
+      ),
+    );
+  }
+
+  Widget _buildPurchasePriceField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: _purchasePriceController,
+        decoration: InputDecoration(
+          labelText: 'Purchase Price',
+          labelStyle: const TextStyle(color: _goldenColor),
+          prefixIcon: const Icon(Icons.currency_rupee, color: _goldenColor),
+          border: OutlineInputBorder(
+            borderSide: const BorderSide(color: _goldenColor),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: _goldenColor),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: _goldenColor, width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          filled: true,
+          fillColor: _goldenColor.withOpacity(0.1),
+        ),
+        keyboardType: TextInputType.number,
+        style: const TextStyle(color: _goldenColor, fontSize: 16),
+        onChanged: (value) {
+          setState(() {
+            widget.data['purchasePrice'] = value.isNotEmpty ? value : null;
+          });
+          _checkFormValidity();
+        },
+      ),
     );
   }
 
   Widget _buildOriginalWarrantyDropdown() {
-    final List<String> warrantyOptions = [
+    const List<String> warrantyOptions = [
       '1 Year',
       '2 Year',
       '3 Year',
@@ -270,59 +230,106 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: DropdownButtonFormField<String>(
-        decoration: const InputDecoration(
+        
+        decoration: InputDecoration(
           labelText: 'Original Warranty',
-          border: OutlineInputBorder(),
+          labelStyle: const TextStyle(color: _goldenColor),
+          prefixIcon: const Icon(Icons.verified_outlined, color: _goldenColor),
+          border: OutlineInputBorder(
+            borderSide: const BorderSide(color: _goldenColor),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: _goldenColor),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: _goldenColor, width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          filled: true,
+          fillColor: _goldenColor.withOpacity(0.1),
         ),
         value: widget.data['orignalWarranty'],
         isExpanded: true,
-        items:
-            warrantyOptions.map((option) {
-              return DropdownMenuItem<String>(
-                value: option,
-                child: Text(option),
-              );
-            }).toList(),
+        dropdownColor:   Color.fromARGB(255, 79, 107, 117),
+        icon: const Icon(Icons.arrow_drop_down, color: _goldenColor),
+        style: const TextStyle(color: _goldenColor, fontSize: 16),
+        items: warrantyOptions.map((option) {
+          return DropdownMenuItem<String>(
+            value: option,
+            child: Text(
+              option,
+              style: const TextStyle(color: _goldenColor),
+            ),
+          );
+        }).toList(),
         onChanged: (String? value) {
-          setState(() {
-            widget.data['orignalWarranty'] = value!;
-          });
-          _checkFormValidity();
+          if (value != null) {
+            setState(() {
+              widget.data['orignalWarranty'] = value;
+            });
+            _checkFormValidity();
+          }
         },
       ),
     );
   }
 
   Widget _buildDatePicker() {
-    return InkWell(
-      onTap: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: widget.invoiceData["invoiceDate"] ?? DateTime.now(),
-          firstDate: DateTime(2020),
-          lastDate: DateTime(2030),
-        );
-        if (picked != null) {
-          setState(() => widget.invoiceData["invoiceDate"] = picked);
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 16),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        onTap: () async {
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: widget.invoiceData["invoiceDate"] ?? DateTime.now(),
+            firstDate: DateTime(2020),
+            lastDate: DateTime(2030),
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: Theme.of(context).colorScheme.copyWith(
+                    primary: _goldenColor,
+                    onPrimary: Colors.white,
+                    surface: Color.fromARGB(255, 79, 107, 117),
+                  ),
+                ),
+                child: child!,
+              );
+            },
+          );
+          if (picked != null) {
+            setState(() {
+              widget.invoiceData["invoiceDate"] = picked;
+            });
+            _checkFormValidity();
+          }
+        },
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(4),
-            color: Colors.white,
+            border: Border.all(color: _goldenColor),
+            borderRadius: BorderRadius.circular(8),
+            color: _goldenColor.withOpacity(0.1),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Invoice Date: ${widget.invoiceData["invoiceDate"] is DateTime ? DateFormat('yyyy-MM-dd').format(widget.invoiceData["invoiceDate"]) : 'Not selected'}',
+              const Icon(Icons.calendar_today, color: _goldenColor),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  widget.invoiceData["invoiceDate"] is DateTime
+                      ? 'Invoice Date: ${DateFormat('yyyy-MM-dd').format(widget.invoiceData["invoiceDate"])}'
+                      : 'Select Invoice Date',
+                  style: const TextStyle(
+                    color: _goldenColor,
+                    fontSize: 16,
+                  ),
+                ),
               ),
-              Icon(Icons.calendar_today),
+              const Icon(Icons.arrow_drop_down, color: _goldenColor),
             ],
           ),
         ),
@@ -330,25 +337,167 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildSimpleField(String label, String key, [TextInputType? type]) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 16),
-      child: TextField(
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-          filled: true,
-          fillColor: Colors.white,
+  List<Widget> _buildCalculationSection() {
+    return [
+      const SizedBox(height: 16),
+      const Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          "Details",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: _goldenColor,
+          ),
         ),
-        keyboardType: type,
-        onChanged: (value) {
-          setState(() {
-            widget.data[key] = value;
-            _checkFormValidity();
-          });
-        },
+      ),
+      const SizedBox(height: 12),
+      _buildDetailsCard(),
+      const SizedBox(height: 16),
+      const Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          "Extended Warranty",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: _goldenColor,
+          ),
+        ),
+      ),
+      const SizedBox(height: 8),
+      ..._buildWarrantyCards(),
+    ];
+  }
+
+  Widget _buildDetailsCard() {
+    return Card(
+      color: Color(0xff131313),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: _goldenColor, width: 1),
+      ),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDetailRow(
+              Icons.verified,
+              "Company Warranty",
+              widget.data["orignalWarranty"] ?? "Not selected",
+            ),
+            const SizedBox(height: 8),
+            _buildDetailRow(
+              Icons.calendar_today,
+              "Invoice Date",
+              widget.invoiceData["invoiceDate"] is DateTime
+                  ? DateFormat('yyyy-MM-dd').format(widget.invoiceData["invoiceDate"])
+                  : 'Not selected',
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  List<Widget> _buildWarrantyCards() {
+    final price = double.tryParse(widget.data["purchasePrice"] ?? "0") ?? 0;
+    
+    return widget.percentList
+        .where((item) => item.isActive)
+        .map((item) {
+      final calculatedAmount = (price * item.percent) / 100;
+      final isSelected = selectedDuration == item.duration;
+
+      return Card(
+        
+        margin: const EdgeInsets.only(bottom: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isSelected ? _goldenColor : _goldenColor.withOpacity(0.3),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        elevation: 2,
+        color: isSelected ? _goldenColor.withOpacity(0.1) :   Color.fromARGB(255, 79, 107, 117),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(
+                Icons.access_time,
+                color: _goldenColor,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "${item.duration} Month${item.duration > 1 ? 's' : ''}",
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: _goldenColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                "₹${calculatedAmount.toStringAsFixed(2)}",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: _goldenColor,
+                ),
+              ),
+              const SizedBox(width: 12),
+              if (isSelected)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: _goldenColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: _goldenColor),
+                  ),
+                  child: const Text(
+                    "Added",
+                    style: TextStyle(
+                      color: _goldenColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              else
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      selectedDuration = item.duration;
+                      widget.warrantyData['warrantyPeriod'] = item.duration;
+                      widget.warrantyData['premiumAmount'] = calculatedAmount;
+                    });
+                    _checkFormValidity();
+                  },
+                  icon: const Icon(Icons.add, size: 16, color: Colors.white),
+                  label: const Text(
+                    "Add",
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _goldenColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 2,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    }).toList();
   }
 
   bool _isCalculationDataAvailable() {
@@ -361,13 +510,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: Colors.blueGrey, size: 20),
+        Icon(icon, color: _goldenColor, size: 20),
         const SizedBox(width: 8),
-        Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 14, color: _goldenColor),
+          ),
+        ),
         const SizedBox(width: 8),
         Text(
           value,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            color: _goldenColor,
+          ),
         ),
       ],
     );

@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:retailer_app/models/brands_model.dart';
 import 'package:retailer_app/models/categories_model.dart';
-import 'package:retailer_app/models/warranty_plans_model.dart';
 import 'package:retailer_app/screens/components/add_customer_components/customer_details.dart';
 import 'package:retailer_app/screens/components/add_customer_components/invoice_details.dart';
 import 'package:retailer_app/screens/components/add_customer_components/product_details.dart';
-import 'package:retailer_app/screens/components/add_customer_components/product_images.dart';
 import 'package:retailer_app/services/catalog_service.dart';
 import 'package:retailer_app/services/customer_form_submit.dart';
-import 'package:retailer_app/services/customer_service.dart';
 
 class CustomerForm extends StatefulWidget {
   final String categoryId;
@@ -25,14 +21,12 @@ class CustomerForm extends StatefulWidget {
 
 class _CustomerFormState extends State<CustomerForm> {
   late Future<List<Brand>> _brands;
-  late Future<List<WarrantyPlans>> _warrantyPlans;
   bool _isPage0Valid = false;
 
   @override
   void initState() {
     super.initState();
 
-    _warrantyPlans = fetchWarrantyPlans();
     _brands = fetchBrands(widget.categoryId);
   }
 
@@ -58,21 +52,19 @@ class _CustomerFormState extends State<CustomerForm> {
   };
 
   final List<String> _pageTitles = [
-    'Product Details',
+    'Extended Warranty Details',
     'Customer Info',
-    'Invoice Details',
-    'Product Images',
-    'Warranty Info',
+    'Invoice & Product Details',
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xff131313),
       appBar: AppBar(
         title: Text(_pageTitles[_currentPage]),
-        backgroundColor: Colors.blue[700],
-        foregroundColor: Colors.white,
+        backgroundColor: Color(0xff131313),
+        foregroundColor: Color(0xFFdccf7b),
         elevation: 1,
       ),
       body: FutureBuilder<List<Brand>>(
@@ -108,7 +100,7 @@ class _CustomerFormState extends State<CustomerForm> {
               Container(
                 height: 4,
                 child: LinearProgressIndicator(
-                  value: (_currentPage + 1) / 5,
+                  value: (_currentPage + 1) / 3,
                   backgroundColor: Colors.grey[300],
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.green[500]!),
                 ),
@@ -133,13 +125,17 @@ class _CustomerFormState extends State<CustomerForm> {
                         });
                       },
                     ),
+
                     CustomerDetailsScreen(data: _formData['customer']),
-                    InvoiceDetailsScreen(data: _formData['invoice']),
-                    ProductImagesScreen(data: _formData['images']),
-                    WarrantyDetailsScreen(
-                      data: _formData['warranty'],
-                      warrantyPlansFuture: _warrantyPlans,
+                    InvoiceDetailsScreen(
+                      data: _formData['invoice'],
+                      productImg: _formData['images'],
+                      warrantyData: _formData['warranty'],
                     ),
+                    // ProductImagesScreen(data: _formData['images']),
+                    // WarrantyDetailsScreen(
+                    //   data: _formData['warranty'],
+                    // ),
                   ],
                 ),
               ),
@@ -147,7 +143,7 @@ class _CustomerFormState extends State<CustomerForm> {
               // Navigation
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(color: Colors.white),
+                decoration: const BoxDecoration(color: Colors.grey),
                 child: Row(
                   children: [
                     if (_currentPage > 0)
@@ -164,21 +160,27 @@ class _CustomerFormState extends State<CustomerForm> {
                         onPressed:
                             (_currentPage == 0 && !_isPage0Valid)
                                 ? null
-                                : (_currentPage == 4
+                                : (_currentPage == 2
                                     ? () =>
                                         submitCustomerForm(context, _formData)
                                     : _nextPage),
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               (_currentPage == 0 && !_isPage0Valid)
-                                  ? Colors.grey
-                                  : (_currentPage == 4
+                                  ? Colors
+                                      .black // Disabled = Black background
+                                  : (_currentPage == 2
                                       ? Colors.green
                                       : Colors.blue[700]),
-                          foregroundColor: Colors.white,
+                          foregroundColor:
+                              (_currentPage == 0 && !_isPage0Valid)
+                                  ? Colors
+                                      .grey
+                                      .shade400 // Disabled = Light grey text
+                                  : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        child: Text(_currentPage == 4 ? 'Submit Form' : 'Next'),
+                        child: Text(_currentPage == 2 ? 'Submit Form' : 'Next'),
                       ),
                     ),
                   ],
@@ -202,165 +204,6 @@ class _CustomerFormState extends State<CustomerForm> {
     _pageController.previousPage(
       duration: Duration(milliseconds: 250),
       curve: Curves.easeOut,
-    );
-  }
-}
-
-// product details
-
-// customer details
-
-// invoic screen
-
-// product images screen
-
-class WarrantyDetailsScreen extends StatefulWidget {
-  final Map<String, dynamic> data;
-  final Future<List<WarrantyPlans>> warrantyPlansFuture;
-
-  WarrantyDetailsScreen({
-    required this.data,
-    required this.warrantyPlansFuture,
-  });
-
-  @override
-  State<WarrantyDetailsScreen> createState() => _WarrantyDetailsScreenState();
-}
-
-class _WarrantyDetailsScreenState extends State<WarrantyDetailsScreen> {
-  WarrantyPlans? selectedPlan;
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<WarrantyPlans>>(
-      future: widget.warrantyPlansFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        if (!snapshot.hasData || snapshot.hasError) {
-          return Center(child: Text('Failed to load warranty plans.'));
-        }
-
-        final plans = snapshot.data!;
-
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // Dropdown
-              DropdownButtonFormField<WarrantyPlans>(
-                decoration: InputDecoration(
-                  labelText: 'Select Warranty Plan',
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
-                value: selectedPlan,
-                isExpanded: true,
-                items:
-                    plans.map((plan) {
-                      return DropdownMenuItem<WarrantyPlans>(
-                        value: plan,
-                        child: Text(
-                          '${plan.planName} (${plan.duration} months, ₹${plan.premiumAmount})',
-                        ),
-                      );
-                    }).toList(),
-                onChanged: (WarrantyPlans? plan) {
-                  if (plan != null) {
-                    setState(() {
-                      selectedPlan = plan;
-
-                      // Fill the fields with selected plan data
-                      widget.data['planId'] = plan.planId;
-                      widget.data['planName'] = plan.planName;
-                      widget.data['warrantyPeriod'] = plan.duration;
-                      widget.data['premiumAmount'] = plan.premiumAmount;
-                    });
-                  }
-                },
-              ),
-
-              SizedBox(height: 16),
-
-              _buildSimpleField('Plan ID', 'planId'),
-              _buildSimpleField('Plan Name', 'planName'),
-              _buildSimpleField(
-                'Warranty Period (months)',
-                'warrantyPeriod',
-                TextInputType.number,
-              ),
-              _buildSimpleField(
-                'Premium Amount',
-                'premiumAmount',
-                TextInputType.number,
-              ),
-              SizedBox(height: 16),
-              // _buildDatePicker('Start Date', 'startDate'),
-              // SizedBox(height: 16),
-              // _buildDatePicker('Expiry Date', 'expiryDate'),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSimpleField(String label, String key, [TextInputType? type]) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 16),
-      child: TextField(
-        controller: TextEditingController(
-            text: widget.data[key]?.toString() ?? '',
-          )
-          ..selection = TextSelection.collapsed(
-            offset: (widget.data[key]?.toString() ?? '').length,
-          ),
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-          filled: true,
-          fillColor: Colors.white,
-        ),
-        keyboardType: type,
-        onChanged: (value) => widget.data[key] = value,
-      ),
-    );
-  }
-
-  Widget _buildDatePicker(String label, String key) {
-    return InkWell(
-      onTap: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: widget.data[key],
-          firstDate: DateTime(2020),
-          lastDate: DateTime(2030),
-        );
-        if (picked != null) {
-          setState(() => widget.data[key] = picked);
-        }
-      },
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(4),
-          color: Colors.white,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '$label: ${DateFormat('yyyy-MM-dd').format(widget.data[key])}',
-            ),
-            Icon(Icons.calendar_today),
-          ],
-        ),
-      ),
     );
   }
 }

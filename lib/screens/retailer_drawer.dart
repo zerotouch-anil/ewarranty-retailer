@@ -19,7 +19,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
   final List<Widget> _pages = [
     RetailerDashboard(),
     RetailerViewCustomers(),
-    // CategoriesComponent(),
     HistoryData(),
     RetailerProfileScreen(),
   ];
