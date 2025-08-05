@@ -120,10 +120,11 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Wallet Statistics Section
-          _buildWalletSection(context, data.walletBalance, isTablet),
+          WoodContainer(
+            height: 120,
+            child: _buildWalletSection(context, data.walletBalance, isTablet),
+          ),
           SizedBox(height: 16),
-
           Text(
             'Categories',
             style: TextStyle(
@@ -323,14 +324,39 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
     WalletBalance wallet,
     bool isTablet,
   ) {
-    return Container(
-      child: _buildRemainingCard(
-        'Wallet Balance',
-        '₹${_formatAmount(wallet.remainingAmount)}',
-        Icons.savings,
-        Colors.green.shade600,
-        Colors.green.shade50,
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '₹${_formatAmount(wallet.remainingAmount)}',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.green.shade800,
+              ),
+            ),
+            Text(
+              'Wallet Balance',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.green.shade800,
+              ),
+            ),
+          ],
+        ),
+        Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withAlpha(13),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(Icons.savings, size: 32, color: Colors.green),
+        ),
+      ],
     );
   }
 
@@ -591,7 +617,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
             width: double.infinity,
             padding: EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Color(0xff131313),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Color(0xFFdccf7b), width: 1),
             ),
@@ -862,7 +888,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
           ),
           content: const Text(
             'Are you sure you want to logout?',
-            style: TextStyle(color: Color(0xFFdccf7b),),
+            style: TextStyle(color: Color(0xFFdccf7b)),
           ),
           actions: [
             TextButton(
@@ -917,6 +943,64 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
           ],
         );
       },
+    );
+  }
+}
+
+class WoodContainer extends StatelessWidget {
+  final double height;
+  final Widget child;
+  const WoodContainer({super.key, required this.height, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: [
+        Container(
+          height: height,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            image: DecorationImage(
+              image: AssetImage("assets/wood.png"),
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: height,
+          width: double.infinity,
+          child: Stack(
+            children: [
+              Container(
+                margin: EdgeInsets.all(6),
+                decoration: BoxDecoration(color: Color(0xff202020)),
+                child: child,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset("assets/topLeft.png"),
+                      Image.asset("assets/topRight.png"),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset("assets/bottomLeft.png"),
+                      Image.asset("assets/bottomRight.png"),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

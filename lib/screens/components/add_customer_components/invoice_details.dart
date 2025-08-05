@@ -150,7 +150,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
             ),
             SizedBox(height: 16),
 
-            WarrantyDetailsScreen(data: widget.warrantyData),
+            WarrantyDetailsScreen(key: UniqueKey(), data: widget.warrantyData),
           ],
         ),
       ),

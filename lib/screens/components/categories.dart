@@ -94,7 +94,7 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
               child: Text(
                 category.categoryName,
                 style: const TextStyle(
-                  color: Color.fromARGB(255, 30, 136, 229),
+                  color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),

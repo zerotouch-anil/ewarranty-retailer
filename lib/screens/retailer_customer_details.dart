@@ -15,18 +15,18 @@ class _ViewCustomerState extends State<ViewCustomer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Color(0xff131313),
       appBar: AppBar(
         title: const Text(
           'Customer Details',
           style: TextStyle(fontWeight: FontWeight.w400),
         ),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        backgroundColor: Color(0xff131313),
+        foregroundColor: Color(0xFFdccf7b),
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: Colors.grey[200]),
+          child: Container(height: 1, color: Color(0xFFdccf7b)),
         ),
       ),
       body: FutureBuilder<ParticularCustomerData>(
@@ -43,10 +43,10 @@ class _ViewCustomerState extends State<ViewCustomer> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                  Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
-                    'Error: ${snapshot.error}',
+                    'Something went wrong!',
                     style: TextStyle(fontSize: 16, color: Colors.red[700]),
                     textAlign: TextAlign.center,
                   ),
@@ -102,10 +102,10 @@ class _ViewCustomerState extends State<ViewCustomer> {
     Color? borderColor,
   }) {
     return Card(
-      color: Colors.white,
+      color: Color(0xFF131313),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: borderColor ?? Colors.grey[300]!, width: 1),
+        side: BorderSide(color: Color(0xFFdccf7b), width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),

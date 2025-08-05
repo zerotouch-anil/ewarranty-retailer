@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:retailer_app/screens/login.dart';
 import 'package:retailer_app/screens/splashscreen.dart';
 import 'package:retailer_app/utils/pixelutil.dart';
 import 'package:retailer_app/utils/shared_preferences.dart';

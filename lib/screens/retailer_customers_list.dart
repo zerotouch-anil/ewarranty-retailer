@@ -348,16 +348,13 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
                 color: Colors.grey[800],
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage ?? 'Unknown error occurred',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _fetchCustomers(isRefresh: true),
-              child: const Text('Retry'),
+              child: const Text('Retry' ,  style: TextStyle(
+                fontSize: 12,
+                color: Colors.black,
+              ),),
             ),
           ],
         ),

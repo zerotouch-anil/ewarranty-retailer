@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 class WarrantyDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> data;
 
-  WarrantyDetailsScreen({required this.data});
+  const WarrantyDetailsScreen({
+    Key? key,
+    required this.data,
+  }) : super(key: key);
 
   @override
   State<WarrantyDetailsScreen> createState() => _WarrantyDetailsScreenState();
 }
+
 
 class _WarrantyDetailsScreenState extends State<WarrantyDetailsScreen> {
   @override

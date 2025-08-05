@@ -45,7 +45,9 @@ void initState() {
   }
 
   // Initialize the validity state
-  _checkFormValidity2();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _checkFormValidity2();
+  });
 }
 
   void _checkFormValidity2() {

@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:retailer_app/screens/retailer_dashboard.dart';
+import 'package:retailer_app/screens/retailer_drawer.dart';
 import 'package:retailer_app/services/customer_service.dart';
 
 Future<void> submitCustomerForm(
@@ -99,7 +98,7 @@ Future<void> submitCustomerForm(
 
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => RetailerDashboard()),
+        MaterialPageRoute(builder: (_) => CustomDrawer()),
       );
     });
   }
@@ -115,7 +114,7 @@ Future<void> submitCustomerForm(
 
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) =>  RetailerDashboard()),
+        MaterialPageRoute(builder: (_) =>  CustomDrawer()),
       );
     });
   }
