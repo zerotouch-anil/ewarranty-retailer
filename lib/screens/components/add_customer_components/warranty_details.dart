@@ -13,7 +13,7 @@ class _WarrantyDetailsScreenState extends State<WarrantyDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(6),
       child: Column(
         children: [
           _buildSimpleField(
@@ -37,33 +37,30 @@ class _WarrantyDetailsScreenState extends State<WarrantyDetailsScreen> {
   }
 
   Widget _buildSimpleField(String label, String key, [TextInputType? type]) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 16),
-      child: TextField(
-        controller: TextEditingController(
-            text: widget.data[key]?.toString() ?? '',
-          )
-          ..selection = TextSelection.collapsed(
-            offset: (widget.data[key]?.toString() ?? '').length,
-          ),
-         style: const TextStyle(color: Color(0xFFdccf7b)),
+    final text = widget.data[key]?.toString() ?? '';
 
-         decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Color(0xFFdccf7b)), // Label color
-        filled: true,
-        fillColor: Color(0xff131313), // Background color
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFdccf7b)),
-          borderRadius: BorderRadius.circular(8),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: TextEditingController(text: text)
+          ..selection = TextSelection.collapsed(offset: text.length),
+        readOnly: true, // ✅ Makes the field non-editable
+        style: const TextStyle(color: Color(0xFFdccf7b)),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(color: Color(0xFFdccf7b)),
+          filled: true,
+          fillColor: const Color(0xff131313),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Color(0xFFdccf7b)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Color(0xFFdccf7b), width: 1.5),
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFdccf7b), width: 1.5),
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
         keyboardType: type,
-        onChanged: (value) => widget.data[key] = value,
       ),
     );
   }

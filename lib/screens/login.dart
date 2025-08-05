@@ -84,7 +84,6 @@ class _LoginScreenState extends State<LoginScreen>
       decoration: BoxDecoration(
         color: const Color(0xff131313),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFdccf7b),),
       ),
       child: TextFormField(
         controller: controller,
@@ -94,11 +93,12 @@ class _LoginScreenState extends State<LoginScreen>
         style: TextStyle(
           fontSize: ScreenUtil.unitHeight * 18,
           fontWeight: FontWeight.w500,
+          color: Color(0xFFdccf7b)
         ),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-            color: Colors.grey[600],
+            color: Color(0xFFdccf7b),
             fontSize: ScreenUtil.unitHeight * 20,
           ),
           prefixIcon: Icon(
@@ -132,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen>
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0xFFdccf7b), width: 2),
+            borderSide: const BorderSide(color: Color(0xFFdccf7b), width: 1),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),

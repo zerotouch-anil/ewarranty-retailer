@@ -9,7 +9,7 @@ class ProductDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> invoiceData;
   final Map<String, dynamic> warrantyData;
   final List<PercentItem> percentList;
-  final Future<List<Brand>> brandsFuture;
+  final List<Brand> brands;
 
   const ProductDetailsScreen({
     super.key,
@@ -17,7 +17,7 @@ class ProductDetailsScreen extends StatefulWidget {
     required this.invoiceData,
     required this.warrantyData,
     required this.percentList,
-    required this.brandsFuture,
+    required this.brands,
     required this.onValidityChanged,
   });
 
@@ -27,17 +27,16 @@ class ProductDetailsScreen extends StatefulWidget {
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   static const Color _goldenColor = Color(0xFFdccf7b);
-  
+
   Brand? selectedBrand;
   int? selectedDuration;
-  List<Brand>? _cachedBrands;
   final _purchasePriceController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _purchasePriceController.text = widget.data['purchasePrice']?.toString() ?? '';
-    _loadBrands();
+    _purchasePriceController.text =
+        widget.data['purchasePrice']?.toString() ?? '';
   }
 
   @override
@@ -46,22 +45,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     super.dispose();
   }
 
-  Future<void> _loadBrands() async {
-    try {
-      _cachedBrands = await widget.brandsFuture;
-      if (mounted && widget.data['brandId'] != null) {
-        selectedBrand = _cachedBrands?.firstWhere(
-          (brand) => brand.brandId == widget.data['brandId'],
-          orElse: () => _cachedBrands!.first,
-        );
-      }
-    } catch (e) {
-      debugPrint('Error loading brands: $e');
-    }
-  }
-
   void _checkFormValidity() {
-    final isValid = widget.data['brandId'] != null &&
+
+    print("brandId: ${widget.data['brandId']}");
+    print("purchasePrice: ${widget.data['purchasePrice']} (${widget.data['purchasePrice'].runtimeType})");
+    print("orignalWarranty: ${widget.data['orignalWarranty']} (${widget.data['orignalWarranty'].runtimeType})");
+    print("invoiceDate: ${widget.invoiceData['invoiceDate']}");
+    print("warrantyPeriod: ${widget.warrantyData['warrantyPeriod']}");
+    print("premiumAmount: ${widget.warrantyData['premiumAmount']}");
+
+    final isValid =
+        widget.data['brandId'] != null &&
         widget.data['purchasePrice'] != null &&
         widget.data['orignalWarranty'] != null &&
         widget.invoiceData['invoiceDate'] != null &&
@@ -78,6 +72,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            SizedBox(height: 15),
             _buildBrandDropdown(),
             _buildPurchasePriceField(),
             _buildOriginalWarrantyDropdown(),
@@ -90,74 +85,36 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Widget _buildBrandDropdown() {
+    final brands = widget.brands;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: FutureBuilder<List<Brand>>(
-        future: widget.brandsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: CircularProgressIndicator(color: _goldenColor),
-              ),
-            );
-          }
-          
-          if (snapshot.hasError) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.red),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                "Error loading brands: ${snapshot.error}",
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-          
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border.all(color: _goldenColor),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                "No brands available",
-                style: TextStyle(color: _goldenColor),
-              ),
-            );
-          }
-
-          final brands = snapshot.data!;
-          return DropdownButtonFormField<Brand>(
-            decoration: InputDecoration(
-              labelText: "Brand",
-              labelStyle: const TextStyle(color: _goldenColor),
-              border: OutlineInputBorder(
-                borderSide: const BorderSide(color: _goldenColor),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: _goldenColor),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: _goldenColor, width: 2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              filled: true,
-              fillColor: _goldenColor.withOpacity(0.1),
-            ),
-            value: selectedBrand,
-            isExpanded: true,
-            dropdownColor:   Color.fromARGB(255, 79, 107, 117),
-            icon: const Icon(Icons.arrow_drop_down, color: _goldenColor),
-            style: const TextStyle(color: _goldenColor, fontSize: 16),
-            items: brands.map((brand) {
+      child: DropdownButtonFormField<Brand>(
+        decoration: InputDecoration(
+          labelText: "Brand",
+          labelStyle: const TextStyle(color: _goldenColor),
+          border: OutlineInputBorder(
+            borderSide: const BorderSide(color: _goldenColor),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: _goldenColor),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: _goldenColor, width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          filled: true,
+          fillColor: _goldenColor.withOpacity(0.1),
+        ),
+        value: selectedBrand,
+        isExpanded: true,
+        dropdownColor: const Color.fromARGB(255, 79, 107, 117),
+        icon: const Icon(Icons.arrow_drop_down, color: _goldenColor),
+        style: const TextStyle(color: _goldenColor, fontSize: 16),
+        items:
+            brands.map((brand) {
               return DropdownMenuItem<Brand>(
                 value: brand,
                 child: Text(
@@ -166,17 +123,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               );
             }).toList(),
-            onChanged: (Brand? brand) {
-              if (brand != null) {
-                setState(() {
-                  selectedBrand = brand;
-                  widget.data['brandName'] = brand.brandName;
-                  widget.data['brandId'] = brand.brandId;
-                });
-                _checkFormValidity();
-              }
-            },
-          );
+        onChanged: (Brand? brand) {
+          if (brand != null) {
+            setState(() {
+              selectedBrand = brand;
+              widget.data['brand'] = brand.brandName;
+              widget.data['brandId'] = brand.brandId;
+            });
+            _checkFormValidity();
+          }
         },
       ),
     );
@@ -230,7 +185,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: DropdownButtonFormField<String>(
-        
         decoration: InputDecoration(
           labelText: 'Original Warranty',
           labelStyle: const TextStyle(color: _goldenColor),
@@ -252,18 +206,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ),
         value: widget.data['orignalWarranty'],
         isExpanded: true,
-        dropdownColor:   Color.fromARGB(255, 79, 107, 117),
+        dropdownColor: Color.fromARGB(255, 79, 107, 117),
         icon: const Icon(Icons.arrow_drop_down, color: _goldenColor),
         style: const TextStyle(color: _goldenColor, fontSize: 16),
-        items: warrantyOptions.map((option) {
-          return DropdownMenuItem<String>(
-            value: option,
-            child: Text(
-              option,
-              style: const TextStyle(color: _goldenColor),
-            ),
-          );
-        }).toList(),
+        items:
+            warrantyOptions.map((option) {
+              return DropdownMenuItem<String>(
+                value: option,
+                child: Text(
+                  option,
+                  style: const TextStyle(color: _goldenColor),
+                ),
+              );
+            }).toList(),
         onChanged: (String? value) {
           if (value != null) {
             setState(() {
@@ -277,28 +232,56 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Widget _buildDatePicker() {
+    final DateTime today = DateTime.now();
+    final DateTime sixMonthsAgo = DateTime(
+      today.year,
+      today.month - 6,
+      today.day,
+    );
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: InkWell(
         onTap: () async {
           final picked = await showDatePicker(
             context: context,
-            initialDate: widget.invoiceData["invoiceDate"] ?? DateTime.now(),
-            firstDate: DateTime(2020),
-            lastDate: DateTime(2030),
+            initialDate: widget.invoiceData["invoiceDate"] ?? today,
+            firstDate: sixMonthsAgo,
+            lastDate: today,
             builder: (context, child) {
               return Theme(
                 data: Theme.of(context).copyWith(
                   colorScheme: Theme.of(context).colorScheme.copyWith(
                     primary: _goldenColor,
                     onPrimary: Colors.white,
-                    surface: Color.fromARGB(255, 79, 107, 117),
+                    surface: const Color.fromARGB(255, 79, 107, 117),
+                  ),
+                  textButtonTheme: TextButtonThemeData(
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (states) {
+                          if (states.contains(MaterialState.pressed)) {
+                            return Colors.green;
+                          }
+                          return Colors.black;
+                        },
+                      ),
+                    ),
                   ),
                 ),
-                child: child!,
+                child: Builder(
+                  builder: (context) {
+                    return Localizations.override(
+                      context: context,
+                      locale: Locale('en', 'US'),
+                      child: child!,
+                    );
+                  },
+                ),
               );
             },
           );
+
           if (picked != null) {
             setState(() {
               widget.invoiceData["invoiceDate"] = picked;
@@ -323,10 +306,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   widget.invoiceData["invoiceDate"] is DateTime
                       ? 'Invoice Date: ${DateFormat('yyyy-MM-dd').format(widget.invoiceData["invoiceDate"])}'
                       : 'Select Invoice Date',
-                  style: const TextStyle(
-                    color: _goldenColor,
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(color: _goldenColor, fontSize: 16),
                 ),
               ),
               const Icon(Icons.arrow_drop_down, color: _goldenColor),
@@ -393,7 +373,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Icons.calendar_today,
               "Invoice Date",
               widget.invoiceData["invoiceDate"] is DateTime
-                  ? DateFormat('yyyy-MM-dd').format(widget.invoiceData["invoiceDate"])
+                  ? DateFormat(
+                    'yyyy-MM-dd',
+                  ).format(widget.invoiceData["invoiceDate"])
                   : 'Not selected',
             ),
           ],
@@ -404,15 +386,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   List<Widget> _buildWarrantyCards() {
     final price = double.tryParse(widget.data["purchasePrice"] ?? "0") ?? 0;
-    
-    return widget.percentList
-        .where((item) => item.isActive)
-        .map((item) {
+
+    return widget.percentList.where((item) => item.isActive).map((item) {
       final calculatedAmount = (price * item.percent) / 100;
       final isSelected = selectedDuration == item.duration;
 
       return Card(
-        
         margin: const EdgeInsets.only(bottom: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -422,16 +401,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
         ),
         elevation: 2,
-        color: isSelected ? _goldenColor.withOpacity(0.1) :   Color.fromARGB(255, 79, 107, 117),
+        color:
+            isSelected
+                ? _goldenColor.withOpacity(0.1)
+                : Color.fromARGB(255, 79, 107, 117),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(
-                Icons.access_time,
-                color: _goldenColor,
-                size: 20,
-              ),
+              Icon(Icons.access_time, color: _goldenColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 "${item.duration} Month${item.duration > 1 ? 's' : ''}",
@@ -453,7 +431,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               const SizedBox(width: 12),
               if (isSelected)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: _goldenColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -486,7 +467,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _goldenColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),

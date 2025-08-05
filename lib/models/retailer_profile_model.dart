@@ -28,7 +28,7 @@ class RetailerProfile {
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
       alternatePhone: json['alternatePhone'] ?? '',
-      parentUser: ParentUser.fromJson(json['parentUser'])
+      parentUser: ParentUser.fromJson(json['parentUser']),
     );
   }
 }
@@ -72,9 +72,9 @@ class WalletBalance {
 
   factory WalletBalance.fromJson(Map<String, dynamic> json) {
     return WalletBalance(
-      totalAmount: json['totalAmount'] ?? 0,
-      usedAmount: json['usedAmount'] ?? 0,
-      remainingAmount: json['remainingAmount'] ?? 0,
+      totalAmount: (json['totalAmount'] ?? 0).toDouble().toInt(),
+      usedAmount: (json['usedAmount'] ?? 0).toDouble().toInt(),
+      remainingAmount: (json['remainingAmount'] ?? 0).toDouble().toInt(),
     );
   }
 }

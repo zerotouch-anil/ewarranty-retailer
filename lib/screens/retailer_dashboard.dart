@@ -4,7 +4,6 @@ import 'package:retailer_app/models/categories_model.dart';
 import 'package:retailer_app/models/dashboard_model.dart';
 import 'package:retailer_app/screens/components/categories.dart';
 import 'package:retailer_app/screens/login.dart';
-import 'package:retailer_app/screens/retailer_add_customer.dart';
 import 'package:retailer_app/screens/retailer_customer_details.dart';
 import 'package:retailer_app/screens/retailer_customers_list.dart';
 import 'package:retailer_app/services/dashboard_service.dart';
@@ -414,21 +413,6 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
           children: [
             Expanded(
               child: _buildActionButton(
-                title: 'Add Customer',
-                icon: Icons.person_add_rounded,
-                color: Color(0xFF2E7D32),
-                bgColor: Color(0xFFE8F5E8),
-                onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => CustomerForm()),
-                  // );
-                },
-              ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: _buildActionButton(
                 title: 'View Customers',
                 icon: Icons.people_rounded,
                 color: Color(0xFF1565C0),
@@ -446,7 +430,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
             SizedBox(width: 12),
             Expanded(
               child: _buildActionButton(
-                title: 'View\nClaims',
+                title: 'View Claims',
                 icon: Icons.assignment_rounded,
                 color: Color(0xFFE65100),
                 bgColor: Color(0xFFFFF3E0),

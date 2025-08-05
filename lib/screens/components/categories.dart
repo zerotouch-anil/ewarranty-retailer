@@ -35,28 +35,21 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
 
         final categories = snapshot.data!;
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3, // Always 3 rows
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    return _buildCategoryItem(category);
-                  },
-                ),
-              ),
-            ],
+        return SizedBox(
+          height: 355, // Adjust height for 3 rows based on your UI
+          child: GridView.builder(
+            scrollDirection: Axis.horizontal,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3, // 3 rows
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.1,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              return _buildCategoryItem(category);
+            },
           ),
         );
       },
@@ -64,8 +57,6 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
   }
 
   Widget _buildCategoryItem(Categories category) {
-   print("parrr: ${category.percentList.map((e) => e.toJson()).toList()}");
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -74,6 +65,7 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
             builder:
                 (_) => CustomerForm(
                   categoryId: category.categoryId,
+                  categoryName: category.categoryName,
                   percentList: category.percentList,
                 ),
           ),
@@ -81,27 +73,23 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
       },
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Color(0xFFdccf7b), width: 0.6),
+          border: Border.all(color: const Color(0xFFdccf7b), width: 0.6),
           borderRadius: BorderRadius.circular(12),
-          color: Color(0xff131313),
+          color: const Color(0xff131313),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.network(
               '$baseUrl${category.img}',
-              height: 40,
+              height: 35,
               fit: BoxFit.cover,
               errorBuilder:
                   (context, error, stackTrace) =>
                       const Icon(Icons.broken_image, color: Colors.grey),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Container(
-              decoration: BoxDecoration(
-                color: Colors.blue.withAlpha(20),
-                borderRadius: BorderRadius.circular(4),
-              ),
               padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
               child: Text(
                 category.categoryName,

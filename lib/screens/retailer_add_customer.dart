@@ -9,29 +9,26 @@ import 'package:retailer_app/services/customer_form_submit.dart';
 
 class CustomerForm extends StatefulWidget {
   final String categoryId;
+  final String categoryName;
   final List<PercentItem> percentList;
+
   const CustomerForm({
     super.key,
     required this.categoryId,
     required this.percentList,
+    required this.categoryName,
   });
+
   @override
   _CustomerFormState createState() => _CustomerFormState();
 }
 
 class _CustomerFormState extends State<CustomerForm> {
-  late Future<List<Brand>> _brands;
-  bool _isPage0Valid = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _brands = fetchBrands(widget.categoryId);
-  }
-
+  late Future<List<Brand>> _brandsFuture;
   int _currentPage = 0;
   final PageController _pageController = PageController();
+  bool _isPage0Valid = false;
+  bool _isPage1Valid = false;
 
   final Map<String, dynamic> _formData = {
     'customer': <String, String>{},
@@ -58,17 +55,26 @@ class _CustomerFormState extends State<CustomerForm> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+
+    _formData['product']['categoryId'] = widget.categoryId;
+    _formData['product']['category'] = widget.categoryName;
+    _brandsFuture = fetchBrands(widget.categoryId);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff131313),
+      backgroundColor: const Color(0xff131313),
       appBar: AppBar(
         title: Text(_pageTitles[_currentPage]),
-        backgroundColor: Color(0xff131313),
-        foregroundColor: Color(0xFFdccf7b),
+        backgroundColor: const Color(0xff131313),
+        foregroundColor: const Color(0xFFdccf7b),
         elevation: 1,
       ),
       body: FutureBuilder<List<Brand>>(
-        future: _brands,
+        future: _brandsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -80,23 +86,24 @@ class _CustomerFormState extends State<CustomerForm> {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
-                  const SizedBox(height: 12),
-                  const Text(
+                children: const [
+                  Icon(Icons.error_outline, color: Colors.red, size: 48),
+                  SizedBox(height: 12),
+                  Text(
                     'No brands found',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black87),
+                    style: TextStyle(fontSize: 16, color: Color(0xFFdccf7b)),
                   ),
-                  const SizedBox(height: 20),
                 ],
               ),
             );
           }
 
+          final List<Brand> brands = snapshot.data!;
+
           return Column(
             children: [
-              // Progress indicator
+              // Progress bar
               Container(
                 height: 4,
                 child: LinearProgressIndicator(
@@ -106,10 +113,11 @@ class _CustomerFormState extends State<CustomerForm> {
                 ),
               ),
 
-              // Content
+              // PageView
               Expanded(
                 child: PageView(
                   controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
                   onPageChanged:
                       (index) => setState(() => _currentPage = index),
                   children: [
@@ -117,7 +125,7 @@ class _CustomerFormState extends State<CustomerForm> {
                       data: _formData['product'],
                       invoiceData: _formData['invoice'],
                       warrantyData: _formData['warranty'],
-                      brandsFuture: Future.value(snapshot.data),
+                      brands: brands,
                       percentList: widget.percentList,
                       onValidityChanged: (isValid) {
                         setState(() {
@@ -125,22 +133,25 @@ class _CustomerFormState extends State<CustomerForm> {
                         });
                       },
                     ),
-
-                    CustomerDetailsScreen(data: _formData['customer']),
+                    CustomerDetailsScreen(
+                      data: _formData['customer'],
+                      onValidityChanged2: (isValid) {
+                        setState(() {
+                          _isPage1Valid = isValid;
+                        });
+                      },
+                    ),
                     InvoiceDetailsScreen(
                       data: _formData['invoice'],
                       productImg: _formData['images'],
                       warrantyData: _formData['warranty'],
+                      productDetails: _formData['product'],
                     ),
-                    // ProductImagesScreen(data: _formData['images']),
-                    // WarrantyDetailsScreen(
-                    //   data: _formData['warranty'],
-                    // ),
                   ],
                 ),
               ),
 
-              // Navigation
+              // Navigation Buttons
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: const BoxDecoration(color: Colors.grey),
@@ -150,6 +161,18 @@ class _CustomerFormState extends State<CustomerForm> {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: _previousPage,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color.fromARGB(
+                              255,
+                              49,
+                              48,
+                              43,
+                            ),
+                            side: const BorderSide(
+                              color: Color.fromARGB(255, 75, 74, 70),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                          ),
                           child: const Text('Previous'),
                         ),
                       ),
@@ -157,27 +180,10 @@ class _CustomerFormState extends State<CustomerForm> {
                     Expanded(
                       flex: 2,
                       child: ElevatedButton(
-                        onPressed:
-                            (_currentPage == 0 && !_isPage0Valid)
-                                ? null
-                                : (_currentPage == 2
-                                    ? () =>
-                                        submitCustomerForm(context, _formData)
-                                    : _nextPage),
+                        onPressed: _getNextButtonAction(),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              (_currentPage == 0 && !_isPage0Valid)
-                                  ? Colors
-                                      .black // Disabled = Black background
-                                  : (_currentPage == 2
-                                      ? Colors.green
-                                      : Colors.blue[700]),
-                          foregroundColor:
-                              (_currentPage == 0 && !_isPage0Valid)
-                                  ? Colors
-                                      .grey
-                                      .shade400 // Disabled = Light grey text
-                                  : Colors.white,
+                          backgroundColor: _getButtonBackgroundColor(),
+                          foregroundColor: _getButtonForegroundColor(),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: Text(_currentPage == 2 ? 'Submit Form' : 'Next'),
@@ -193,16 +199,47 @@ class _CustomerFormState extends State<CustomerForm> {
     );
   }
 
+  VoidCallback? _getNextButtonAction() {
+    if (_currentPage == 0 && !_isPage0Valid) return null;
+    if (_currentPage == 1 && !_isPage1Valid) return null;
+    if (_currentPage == 2) {
+      return () => submitCustomerForm(context, _formData);
+    }
+    return _nextPage;
+  }
+
+  Color _getButtonBackgroundColor() {
+    bool isCurrentPageInvalid =
+        (_currentPage == 0 && !_isPage0Valid) ||
+        (_currentPage == 1 && !_isPage1Valid);
+
+    if (isCurrentPageInvalid) {
+      return Colors.black;
+    } else if (_currentPage == 2) {
+      return const Color.fromARGB(255, 28, 105, 30);
+    } else {
+      return Colors.blue[700]!;
+    }
+  }
+
+  Color _getButtonForegroundColor() {
+    bool isCurrentPageInvalid =
+        (_currentPage == 0 && !_isPage0Valid) ||
+        (_currentPage == 1 && !_isPage1Valid);
+
+    return isCurrentPageInvalid ? Colors.grey.shade400 : Colors.white;
+  }
+
   void _nextPage() {
     _pageController.nextPage(
-      duration: Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 250),
       curve: Curves.easeOut,
     );
   }
 
   void _previousPage() {
     _pageController.previousPage(
-      duration: Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 250),
       curve: Curves.easeOut,
     );
   }

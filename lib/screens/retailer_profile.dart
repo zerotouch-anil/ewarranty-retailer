@@ -103,9 +103,10 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        const SizedBox(height: 60),
                         Icon(
                           Icons.error_outline,
-                          size: 64,
+                          size: 50,
                           color: Colors.red[400],
                         ),
                         const SizedBox(height: 16),
@@ -113,12 +114,11 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
                           'Error loading data',
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                             color: Colors.red,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text('${snapshot.error}', textAlign: TextAlign.center),
                       ],
                     ),
                   );
