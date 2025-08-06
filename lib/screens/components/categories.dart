@@ -20,6 +20,27 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
     _categoriesFuture = fetchCategories();
   }
 
+  // Calculate dynamic row count based on categories length
+  int _calculateRowCount(int categoryCount) {
+    if (categoryCount == 0) return 1;
+    if (categoryCount <= 3) return 1;
+    if (categoryCount <= 6) return 2;
+    return 3; // Maximum 3 rows
+  }
+
+  // Calculate dynamic height based on row count
+  double _calculateHeight(int rowCount) {
+    const double itemHeight = 70.0;
+    const double spacing = 5.0;
+    return (itemHeight * rowCount) + (spacing * (rowCount - 1)) + 20;
+  }
+
+  int _calculateVisibleColumns(double containerWidth) {
+    const double itemWidth = 90.0; 
+    const double spacing = 12.0;
+    return ((containerWidth - 24) / (itemWidth + spacing)).floor(); 
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Categories>>(
@@ -34,22 +55,54 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
         }
 
         final categories = snapshot.data!;
+        final rowCount = _calculateRowCount(categories.length);
+        final containerHeight = _calculateHeight(rowCount);
 
-        return SizedBox(
-          height: 355, // Adjust height for 3 rows based on your UI
-          child: GridView.builder(
-            scrollDirection: Axis.horizontal,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, // 3 rows
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.1,
-            ),
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final category = categories[index];
-              return _buildCategoryItem(category);
-            },
+        return Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: Text(
+                  'Categories',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFdccf7b),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final visibleColumns = _calculateVisibleColumns(constraints.maxWidth);
+                    final maxVisibleItems = rowCount * visibleColumns;
+                    final needsScrolling = categories.length > maxVisibleItems;
+                    
+                    return GridView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: needsScrolling 
+                          ? const BouncingScrollPhysics() 
+                          : const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: rowCount,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.8,
+                      ),
+                      itemCount: categories.length,
+                      itemBuilder: (context, index) {
+                        final category = categories[index];
+                        return _buildCategoryItem(category);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -62,19 +115,18 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (_) => CustomerForm(
-                  categoryId: category.categoryId,
-                  categoryName: category.categoryName,
-                  percentList: category.percentList,
-                ),
+            builder: (_) => CustomerForm(
+              categoryId: category.categoryId,
+              categoryName: category.categoryName,
+              percentList: category.percentList,
+            ),
           ),
         );
       },
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: const Color(0xFFdccf7b), width: 0.6),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(7),
           color: const Color(0xff131313),
         ),
         child: Column(
@@ -82,23 +134,27 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
           children: [
             Image.network(
               '$baseUrl${category.img}',
-              height: 35,
+              height: 30,
               fit: BoxFit.cover,
-              errorBuilder:
-                  (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image, color: Colors.grey),
+              errorBuilder: (context, error, stackTrace) {
+                print('Image load error for: $baseUrl${category.img}');
+                print('Error: $error');
+                return const Icon(Icons.broken_image, color: Colors.grey);
+              },
             ),
             const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 5, right:5),
               child: Text(
                 category.categoryName,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

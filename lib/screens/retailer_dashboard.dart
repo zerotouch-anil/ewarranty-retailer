@@ -7,6 +7,7 @@ import 'package:retailer_app/screens/login.dart';
 import 'package:retailer_app/screens/retailer_customer_details.dart';
 import 'package:retailer_app/screens/retailer_customers_list.dart';
 import 'package:retailer_app/services/dashboard_service.dart';
+import 'package:retailer_app/utils/wooden_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RetailerDashboard extends StatefulWidget {
@@ -28,84 +29,112 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff131313),
+      backgroundColor: Colors.transparent,
       key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Color(0xff131313),
-        foregroundColor: Color(0xFFdccf7b),
-        title: Text(
-          'Dashboard',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {
-              _refreshDashboard();
-            },
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset('assets/bg.jpg', fit: BoxFit.cover),
           ),
-          // IconButton(
-          //   icon: Icon(Icons.notifications_outlined, color: Color(0xFF0D47A1)),
-          //   onPressed: () {},
-          // ),
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              _showLogoutDialog(context);
-            },
+
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.7)),
           ),
-        ],
-      ),
-      body: FutureBuilder<DashboardData>(
-        future: dashboardData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red.shade400,
+
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 22,
+                    right: 9,
+                    top: 5,
+                    bottom: 5,
                   ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Error loading dashboard',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.red.shade700,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Center(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Please try refreshing the page or log out and log back in.',
-                        textAlign: TextAlign.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Dashboard',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Color(0xFFdccf7b),
                         ),
                       ),
-                    ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.refresh, color: Color(0xFFdccf7b)),
+                            onPressed: _refreshDashboard,
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.logout, color: Color(0xFFdccf7b)),
+                            onPressed: () => _showLogoutDialog(context),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          } else if (snapshot.hasData) {
-            return _buildDashboardContent(context, snapshot.data!);
-          } else {
-            return Center(child: Text('No data available'));
-          }
-        },
+                ),
+
+                Expanded(
+                  child: FutureBuilder<DashboardData>(
+                    future: dashboardData,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF1565C0),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 64,
+                                color: Colors.red.shade400,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'Error loading dashboard',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.red.shade700,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Please try refreshing the page or log out and log back in.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else if (snapshot.hasData) {
+                        return _buildDashboardContent(context, snapshot.data!);
+                      } else {
+                        return Center(child: Text('No data available'));
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -121,36 +150,37 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           WoodContainer(
-            height: 120,
+            height: 100,
             child: _buildWalletSection(context, data.walletBalance, isTablet),
           ),
-          SizedBox(height: 16),
-          Text(
-            'Categories',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFdccf7b),
+          SizedBox(height: 20),
+
+          WoodContainer(height: 320, child: CategoriesComponent()),
+          SizedBox(height: 20),
+
+          WoodContainer(height: 190, child: _buildActionButtons()),
+          SizedBox(height: 20),
+
+          WoodContainer(
+            height: 470,
+            child: _buildEWarrantyStatsSection(
+              context,
+              data.eWarrantyStats,
+              isTablet,
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 20),
 
-          CategoriesComponent(),
-          SizedBox(height: 16),
-
-          _buildActionButtons(),
-          SizedBox(height: 16),
-
-          _buildEWarrantyStatsSection(context, data.eWarrantyStats, isTablet),
-          SizedBox(height: 8),
-
-          // Customer Count Section
-          _buildCustomerCountSection(
-            context,
-            data.totalCustomersCount,
-            isTablet,
+          WoodContainer(
+            height: 80,
+            child: _buildCustomerCountSection(
+              context,
+              data.totalCustomersCount,
+              isTablet,
+            ),
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 20),
+
           // Recent Customers Section
           _buildRecentCustomersSection(context, data.customers, isTablet),
         ],
@@ -192,7 +222,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
       return Container(
         decoration: BoxDecoration(
           color: Color(0xff131313),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.08),
@@ -204,7 +234,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
           border: Border.all(color: Color(0xFFdccf7b), width: 1),
         ),
         child: Padding(
-          padding: EdgeInsets.all(isTablet ? 20 : 16),
+          padding: EdgeInsets.all(isTablet ? 15 : 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -227,7 +257,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
               Text(
                 title,
                 style: textStyleTitle,
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -239,7 +269,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
-        horizontal: isTablet ? 20 : 0,
+        horizontal: isTablet ? 20 : 12,
         vertical: isTablet ? 16 : 12,
       ),
       child: Column(
@@ -276,31 +306,31 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
                     "Total Warranties",
                     stats.totalWarranties.toString(),
                     Icons.description_outlined,
-                    Color(0xFF2563EB),
+                    Color(0xFFdccf7b),
                   ),
                   _buildStatCard(
                     "Active Warranties",
                     stats.activeWarranties.toString(),
                     Icons.verified_outlined,
-                    Color(0xFF059669),
+                    Color(0xFFdccf7b),
                   ),
                   _buildStatCard(
                     "Expired Warranties",
                     stats.expiredWarranties.toString(),
                     Icons.schedule_outlined,
-                    Color(0xFFDC2626),
+                    Color(0xFFdccf7b),
                   ),
                   _buildStatCard(
                     "Claimed Warranties",
                     stats.claimedWarranties.toString(),
                     Icons.task_alt_outlined,
-                    Color(0xFFEA580C),
+                    Color(0xFFdccf7b),
                   ),
                   _buildStatCard(
                     "Premium Collected",
                     "₹${stats.totalPremiumCollected}",
                     Icons.account_balance_wallet_outlined,
-                    Color(0xFF7C3AED),
+                    Color(0xFFdccf7b),
                   ),
                   _buildStatCard(
                     "Last Warranty",
@@ -308,7 +338,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
                         ? "${stats.lastWarrantyDate!.day}/${stats.lastWarrantyDate!.month}/${stats.lastWarrantyDate!.year}"
                         : "N/A",
                     Icons.event_outlined,
-                    Color(0xFF0891B2),
+                    Color(0xFFdccf7b),
                   ),
                 ],
               );
@@ -325,154 +355,110 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
     bool isTablet,
   ) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '₹${_formatAmount(wallet.remainingAmount)}',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade800,
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(
+                        13,
+                      ), // very light transparent background
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.currency_rupee,
+                      color: Color(0xFFdccf7b), // dark yellow
+                      size: 20,
+                    ),
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    _formatAmount(wallet.remainingAmount),
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFB8860B), // dark yellow
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Text(
-              'Wallet Balance',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade800,
+              Text(
+                'Wallet Balance',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFFdccf7b), // light yellow
+                ),
               ),
-            ),
-          ],
-        ),
-        Container(
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white.withAlpha(13),
-            borderRadius: BorderRadius.circular(12),
+            ],
           ),
-          child: Icon(Icons.savings, size: 32, color: Colors.green),
         ),
       ],
-    );
-  }
-
-  Widget _buildRemainingCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-    Color bgColor,
-  ) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      decoration: BoxDecoration(
-        color: Color(0xff131313),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFdccf7b), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Balance Text
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green.shade800,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFFdccf7b),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Icon on right
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: bgColor.withAlpha(13),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, size: 32, color: color),
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildActionButtons() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Quick Actions',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFFdccf7b),
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Quick Actions',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFdccf7b),
+            ),
           ),
-        ),
-        SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionButton(
-                title: 'View Customers',
-                icon: Icons.people_rounded,
-                color: Color(0xFF1565C0),
-                bgColor: Color(0xFFE3F2FD),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RetailerViewCustomers(),
-                    ),
-                  );
-                },
+          SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionButton(
+                  title: 'View Customers',
+                  icon: Icons.people_rounded,
+                  color: Color(0xFFdccf7b),
+                  bgColor: Color(0xFFE3F2FD),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RetailerViewCustomers(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: _buildActionButton(
-                title: 'View Claims',
-                icon: Icons.assignment_rounded,
-                color: Color(0xFFE65100),
-                bgColor: Color(0xFFFFF3E0),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('No claims available'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
+              SizedBox(width: 18),
+              Expanded(
+                child: _buildActionButton(
+                  title: 'View Claims',
+                  icon: Icons.assignment_rounded,
+                  color: Color(0xFFdccf7b),
+                  bgColor: Color(0xFFFFF3E0),
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('No claims available'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -486,13 +472,11 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 15),
         decoration: BoxDecoration(
           color: Color(0xff131313),
-          borderRadius: BorderRadius.circular(12),
-
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Color(0xFFdccf7b), width: 1),
-
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -537,8 +521,6 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Color(0xff131313),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFdccf7b), width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.08),
@@ -556,7 +538,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
               color: Colors.purple.shade50.withAlpha(13),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(Icons.people, size: 24, color: Colors.purple.shade600),
+            child: Icon(Icons.people, size: 24, color: Color(0xFFdccf7b)),
           ),
           SizedBox(width: 16),
           Expanded(
@@ -643,11 +625,60 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
             itemCount: recentCustomers.length,
             separatorBuilder: (context, index) => SizedBox(height: 12),
             itemBuilder: (context, index) {
-              return _buildCustomerCard(recentCustomers[index], isTablet);
+              final customer = recentCustomers[index];
+              final dynamicHeight = _calculateCustomerCardHeight(
+                context,
+                customer,
+              );
+
+              return WoodContainer(
+                height: dynamicHeight,
+                child: _buildCustomerCard(customer, isTablet),
+              );
             },
           ),
       ],
     );
+  }
+
+  double _calculateCustomerCardHeight(BuildContext context, Customer customer) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Base components heights
+    double paddingHeight = 32; // Container padding (16 * 2)
+    double headerRowHeight = 36; // Icon + customer name + warranty key row
+    double spacingAfterHeader = 12; // SizedBox after header
+    double categoryModelRowHeight = 32; // Category and model chips row
+    double spacingAfterChips = 8; // SizedBox after chips
+    double dateAmountRowHeight = 20; // Date and amount row
+    double spacingAfterDate = 8; // SizedBox after date
+
+    // Notes section (only if present)
+    double notesHeight = 0;
+    if (customer.notes?.isNotEmpty == true) {
+      notesHeight = 8 + 20; // Padding + notes text height
+    }
+
+    // Calculate base height
+    double calculatedHeight =
+        paddingHeight +
+        headerRowHeight +
+        spacingAfterHeader +
+        categoryModelRowHeight +
+        spacingAfterChips +
+        dateAmountRowHeight +
+        spacingAfterDate +
+        notesHeight;
+
+    // Add buffer to prevent overflow
+    double totalHeight = calculatedHeight + 15;
+
+    // Set reasonable bounds based on screen size
+    double minHeight = screenHeight * 0.18; // Slightly smaller than previous
+    double maxHeight = screenHeight * 0.35;
+
+    return totalHeight.clamp(minHeight, maxHeight);
   }
 
   Widget _buildCustomerCard(Customer customer, bool isTablet) {
@@ -669,9 +700,6 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Color(0xff131313),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Color(0xFFdccf7b), width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withAlpha(3),
@@ -782,45 +810,36 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
                   ),
               ],
             ),
-            SizedBox(height: 8),
 
-            Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: Row(
-                    children: [
-                      if (customer.notes?.isNotEmpty == true)
-                        Text(
-                          "Notes: ",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      SizedBox(width: 4),
-                      if (customer.notes?.isNotEmpty == true)
-                        SizedBox(
-                          width: 200, // adjust as needed
-                          child: Text(
-                            customer.notes?.isNotEmpty == true
-                                ? customer.notes!
-                                : "n/a",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.lightGreen.shade700,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                    ],
+            // Notes section - only show if present, no extra spacing when absent
+            if (customer.notes?.isNotEmpty == true) ...[
+              SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Notes: ",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[500],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  Expanded(
+                    child: Text(
+                      customer.notes!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.lightGreen.shade700,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -912,7 +931,6 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
 
                 if (!context.mounted) return;
 
-                // Navigate to login
                 navigator.pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                   (route) => false,
@@ -943,64 +961,6 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
           ],
         );
       },
-    );
-  }
-}
-
-class WoodContainer extends StatelessWidget {
-  final double height;
-  final Widget child;
-  const WoodContainer({super.key, required this.height, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: AlignmentDirectional.center,
-      children: [
-        Container(
-          height: height,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(
-              image: AssetImage("assets/wood.png"),
-              fit: BoxFit.fill,
-            ),
-          ),
-        ),
-        SizedBox(
-          height: height,
-          width: double.infinity,
-          child: Stack(
-            children: [
-              Container(
-                margin: EdgeInsets.all(6),
-                decoration: BoxDecoration(color: Color(0xff202020)),
-                child: child,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Image.asset("assets/topLeft.png"),
-                      Image.asset("assets/topRight.png"),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Image.asset("assets/bottomLeft.png"),
-                      Image.asset("assets/bottomRight.png"),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

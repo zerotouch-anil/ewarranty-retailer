@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:retailer_app/models/customers_list_model.dart';
 import 'package:retailer_app/screens/retailer_customer_details.dart';
+import 'package:retailer_app/utils/wooden_container.dart';
 import '../services/customer_service.dart';
 
 class RetailerViewCustomers extends StatefulWidget {
@@ -45,10 +46,8 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
 
   void _setupScrollListener() {
     _scrollController.addListener(() {
-      // Check if user has scrolled to the bottom
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 200) {
-        // Load more data if available and not already loading
         if (_paginationData != null &&
             _paginationData!.currentPage < _paginationData!.totalPages &&
             !_isLoadingMore) {
@@ -147,6 +146,30 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
     _fetchCustomers(isRefresh: true);
   }
 
+  // Calculate dynamic height based on screen size and content
+  double _calculateWoodContainerHeight(BuildContext context, CustomersData customer) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    double baseHeight = 50; 
+    double headerHeight = screenWidth * 0.12 + 20; 
+    double productInfoHeight = 35; 
+    double premiumAmountHeight = 55; 
+    double warrantyKeyHeight = 50; 
+
+    double notesHeight = 0;
+    if (customer.notes?.isNotEmpty == true) {
+      notesHeight = 30;
+    }
+    
+    double totalHeight = baseHeight + headerHeight + productInfoHeight + 
+                        premiumAmountHeight + warrantyKeyHeight + notesHeight;
+    
+    double minHeight = screenHeight * 0.25;
+    
+    return totalHeight > minHeight ? totalHeight : minHeight;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,10 +196,9 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
                   alignment: WrapAlignment.start,
                   children: [
                     SizedBox(
-                      width:
-                          MediaQuery.of(context).size.width > 600
-                              ? 250
-                              : MediaQuery.of(context).size.width / 2 - 24,
+                      width: MediaQuery.of(context).size.width > 600
+                          ? 250
+                          : MediaQuery.of(context).size.width / 2 - 24,
                       child: TextField(
                         readOnly: true,
                         style: const TextStyle(color: Colors.white),
@@ -209,18 +231,16 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
                             ),
                           ),
                         ),
-                        onTap:
-                            () => _pickDate(
-                              controller: _startDateController,
-                              isStart: true,
-                            ),
+                        onTap: () => _pickDate(
+                          controller: _startDateController,
+                          isStart: true,
+                        ),
                       ),
                     ),
                     SizedBox(
-                      width:
-                          MediaQuery.of(context).size.width > 600
-                              ? 250
-                              : MediaQuery.of(context).size.width / 2 - 24,
+                      width: MediaQuery.of(context).size.width > 600
+                          ? 250
+                          : MediaQuery.of(context).size.width / 2 - 24,
                       child: TextField(
                         readOnly: true,
                         style: const TextStyle(color: Colors.white),
@@ -253,11 +273,10 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
                             ),
                           ),
                         ),
-                        onTap:
-                            () => _pickDate(
-                              controller: _endDateController,
-                              isStart: false,
-                            ),
+                        onTap: () => _pickDate(
+                          controller: _endDateController,
+                          isStart: false,
+                        ),
                       ),
                     ),
                     Row(
@@ -276,22 +295,21 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
                             ),
                             elevation: 2,
                           ),
-                          icon:
-                              _isLoading
-                                  ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
+                          icon: _isLoading
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
                                     ),
-                                  )
-                                  : const Icon(
-                                    Icons.search,
-                                    color: Colors.white,
                                   ),
+                                )
+                              : const Icon(
+                                  Icons.search,
+                                  color: Colors.white,
+                                ),
                           label: Text(
                             _isLoading ? 'Searching...' : 'Search',
                             style: const TextStyle(
@@ -317,7 +335,6 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
               ],
             ),
           ),
-
           Expanded(child: _buildCustomerList()),
         ],
       ),
@@ -351,10 +368,10 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _fetchCustomers(isRefresh: true),
-              child: const Text('Retry' ,  style: TextStyle(
-                fontSize: 12,
-                color: Colors.black,
-              ),),
+              child: const Text(
+                'Retry',
+                style: TextStyle(fontSize: 12, color: Colors.black),
+              ),
             ),
           ],
         ),
@@ -388,10 +405,9 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
 
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 16),
       itemCount: _allCustomers.length + (_isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
-        // Show loading indicator at the bottom when loading more
         if (index == _allCustomers.length && _isLoadingMore) {
           return const Padding(
             padding: EdgeInsets.all(16.0),
@@ -405,221 +421,233 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
 
         final customer = _allCustomers[index];
         final screenWidth = MediaQuery.of(context).size.width;
+        final dynamicHeight = _calculateWoodContainerHeight(context, customer);
 
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (context) => ViewCustomer(customerId: customer.customerId),
-              ),
-            );
-          },
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: Color(0xff131313),
-              border: Border.all(color: Color(0xFFdccf7b), width: 0.5),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: WoodContainer(
+            height: dynamicHeight,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ViewCustomer(customerId: customer.customerId),
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// --- Customer Name Header ---
-                  Row(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 20,
+                    horizontal: 16,
+                  ),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: screenWidth * 0.12,
-                        height: screenWidth * 0.12,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1976D2).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Color(0xFF1976D2),
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              customer.name,
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.042,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFFdccf7b),
-                              ),
+                      /// --- Customer Name Header ---
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: screenWidth * 0.12,
+                            height: screenWidth * 0.12,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1976D2).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              DateFormat.yMMMd().format(customer.createdDate),
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.032,
-                                color: Colors.grey[500],
-                                fontWeight: FontWeight.w500,
+                            child: const Icon(
+                              Icons.person,
+                              color: Color(0xFF1976D2),
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  customer.name,
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.042,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFdccf7b),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  DateFormat.yMMMd().format(
+                                    customer.createdDate,
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.032,
+                                    color: Colors.grey[500],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      /// --- Product Info ---
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.devices,
+                              size: 16,
+                              color: Color(0xFF10B981),
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                customer.modelName,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.036,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF10B981),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 20),
+                      const SizedBox(height: 12),
 
-                  /// --- Product Info ---
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.devices,
-                          size: 16,
-                          color: Color(0xFF10B981),
-                        ),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            customer.modelName,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.036,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF10B981),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  /// --- Premium Amount ---
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF59E0B).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.currency_rupee,
-                          size: 20,
-                          color: Color(0xFFF59E0B),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      /// --- Premium Amount ---
+                      Row(
                         children: [
-                          Text(
-                            '₹${customer.premiumAmount}',
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.045,
-                              fontWeight: FontWeight.w700,
-                              color: const Color.fromARGB(255, 5, 145, 40),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF59E0B).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.currency_rupee,
+                              size: 20,
+                              color: Color(0xFFF59E0B),
                             ),
                           ),
-                          Text(
-                            'Premium Amount',
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.032,
-                              color: Colors.grey[500],
-                            ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '₹${customer.premiumAmount}',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.045,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color.fromARGB(255, 5, 145, 40),
+                                ),
+                              ),
+                              Text(
+                                'Premium Amount',
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.032,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
+
+                      const SizedBox(height: 12),
+
+                      /// --- Warranty Key ---
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Color(0xff131313),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Colors.grey[200]!,
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.security,
+                              size: 18,
+                              color: Color.fromARGB(255, 7, 122, 74),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                customer.warrantyKey,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color.fromARGB(255, 4, 216, 181),
+                                  fontFamily: 'monospace',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// --- Notes (only if present) ---
+                      if (customer.notes?.isNotEmpty == true) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Text(
+                              "Notes: ",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                customer.notes!,
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.035,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.lightGreen.shade700,
+                                  fontFamily: 'monospace',
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
-
-                  const SizedBox(height: 16),
-
-                  /// --- Warranty Key ---
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Color(0xff131313),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey[200]!, width: 1),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.security,
-                          size: 18,
-                          color: Color.fromARGB(255, 7, 122, 74),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            customer.warrantyKey,
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.035,
-                              fontWeight: FontWeight.w600,
-                              color: const Color.fromARGB(255, 4, 216, 181),
-                              fontFamily: 'monospace',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-                  if (customer.notes?.isNotEmpty == true)
-                    Row(
-                      children: [
-                        const SizedBox(width: 8),
-                        Text(
-                          "Notes: ",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            customer.notes!,
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.035,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.lightGreen.shade700,
-                              fontFamily: 'monospace',
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
+                ),
               ),
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:retailer_app/models/history_model.dart';
 import 'package:retailer_app/screens/retailer_drawer.dart';
 import 'package:retailer_app/services/history_service.dart';
+import 'package:retailer_app/utils/wooden_container.dart';
 
 class HistoryData extends StatefulWidget {
   const HistoryData({super.key});
@@ -452,184 +453,185 @@ class _HistoryDataState extends State<HistoryData> {
                           }
 
                           final history = _allHistoryData[index];
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: const Color(0xff131313),
-                                border: Border.all(
-                                  color: Color(0xFFdccf7b),
-                                  width:1.0,
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Header Row
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: _getTransactionTypeColor(
-                                              history.transactionType,
-                                            ).withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(
-                                              20,
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: WoodContainer(
+                              height: 290,
+                              child: Card(
+                                elevation: 4,
+                                color: const Color(0xff202020),
+
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Header Row
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
                                             ),
-                                            border: Border.all(
+                                            decoration: BoxDecoration(
                                               color: _getTransactionTypeColor(
                                                 history.transactionType,
-                                              ),
-                                              width: 1,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                _getTransactionTypeIcon(
-                                                  history.transactionType,
-                                                ),
-                                                size: 16,
+                                              ).withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              border: Border.all(
                                                 color: _getTransactionTypeColor(
                                                   history.transactionType,
                                                 ),
+                                                width: 1,
                                               ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                history.transactionType,
-                                                style: TextStyle(
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  _getTransactionTypeIcon(
+                                                    history.transactionType,
+                                                  ),
+                                                  size: 16,
                                                   color:
                                                       _getTransactionTypeColor(
                                                         history.transactionType,
                                                       ),
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Text(
-                                          history.transactionType ==
-                                                  "WARRANTY_USAGE"
-                                              ? '-₹${history.amount}'
-                                              : '₹${history.amount}',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: _getTransactionTypeColor(
-                                              history.transactionType,
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  history.transactionType,
+                                                  style: TextStyle(
+                                                    color:
+                                                        _getTransactionTypeColor(
+                                                          history
+                                                              .transactionType,
+                                                        ),
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 16),
-
-                                    // Customer Information
-                                    if (history.transactionType ==
-                                        "WARRANTY_USAGE")
-                                      _buildInfoRow(
-                                        'Customer Name',
-                                        history.customerDetails?.customerName ??
-                                            'n/a',
-                                        Icons.person,
-                                      ),
-
-                                    const SizedBox(height: 8),
-
-                                    // Warranty Key
-                                    if (history.transactionType ==
-                                        "WARRANTY_USAGE")
-                                      _buildInfoRow(
-                                        'Warranty Key',
-                                        history.warrantyKey ?? 'n/a',
-                                        Icons.vpn_key,
-                                      ),
-
-                                    if (history.transactionType == "ALLOCATION")
-                                      _buildInfoRow(
-                                        'Transaction Id',
-                                        history.transactionId,
-                                        Icons.vpn_key,
-                                      ),
-
-                                    const SizedBox(height: 8),
-
-                                    // User Types Row
-                                    Row(
-                                      children: [
-                                        if (history.transactionType ==
-                                            "ALLOCATION")
-                                          Expanded(
-                                            child: _buildInfoRow(
-                                              'From',
-                                              history.fromUser != null
-                                                  ? '${history.fromUser!.name} (${history.fromUser!.userType})'
-                                                  : 'n/a',
-                                              Icons.person_outline,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: _buildInfoRow(
-                                            'Notes',
-                                            history.notes ?? "n/a",
-                                            Icons.notes,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 12),
-
-                                    // Date
-                                    Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[600],
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.schedule,
-                                            size: 16,
-                                            color: Colors.white,
-                                          ),
-                                          const SizedBox(width: 8),
                                           Text(
-                                            _formatDate(
-                                              history.transactionDate,
-                                            ),
+                                            history.transactionType ==
+                                                    "WARRANTY_USAGE"
+                                                ? '-₹${history.amount}'
+                                                : '₹${history.amount}',
                                             style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: _getTransactionTypeColor(
+                                                history.transactionType,
+                                              ),
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
+
+                                      const SizedBox(height: 16),
+
+                                      // Customer Information
+                                      if (history.transactionType ==
+                                          "WARRANTY_USAGE")
+                                        _buildInfoRow(
+                                          'Customer Name',
+                                          history
+                                                  .customerDetails
+                                                  ?.customerName ??
+                                              'n/a',
+                                          Icons.person,
+                                        ),
+
+                                      const SizedBox(height: 8),
+
+                                      // Warranty Key
+                                      if (history.transactionType ==
+                                          "WARRANTY_USAGE")
+                                        _buildInfoRow(
+                                          'Warranty Key',
+                                          history.warrantyKey ?? 'n/a',
+                                          Icons.vpn_key,
+                                        ),
+
+                                      if (history.transactionType ==
+                                          "ALLOCATION")
+                                        _buildInfoRow(
+                                          'Transaction Id',
+                                          history.transactionId,
+                                          Icons.vpn_key,
+                                        ),
+
+                                      const SizedBox(height: 8),
+
+                                      // User Types Row
+                                      Row(
+                                        children: [
+                                          if (history.transactionType ==
+                                              "ALLOCATION")
+                                            Expanded(
+                                              child: _buildInfoRow(
+                                                'From',
+                                                history.fromUser != null
+                                                    ? '${history.fromUser!.name} (${history.fromUser!.userType})'
+                                                    : 'n/a',
+                                                Icons.person_outline,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: _buildInfoRow(
+                                              'Notes',
+                                              history.notes ?? "n/a",
+                                              Icons.notes,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      const SizedBox(height: 12),
+
+                                      // Date
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[600],
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.schedule,
+                                              size: 16,
+                                              color: Colors.white,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              _formatDate(
+                                                history.transactionDate,
+                                              ),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
