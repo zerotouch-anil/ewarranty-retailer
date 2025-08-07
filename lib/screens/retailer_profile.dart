@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:retailer_app/models/retailer_profile_model.dart';
 import 'package:retailer_app/screens/retailer_change_password.dart';
 import 'package:retailer_app/services/retailer_profile_service.dart';
+import 'package:retailer_app/utils/wooden_container.dart';
 
 class RetailerProfileScreen extends StatefulWidget {
   const RetailerProfileScreen({super.key});
@@ -22,7 +23,7 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff131313),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text(
           "Retailer Profile",
@@ -31,10 +32,10 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
             color: Color(0xFFdccf7b),
           ),
         ),
-        backgroundColor: Color(0xff131313),
+        backgroundColor: Colors.transparent,
         foregroundColor: Color(0xFFdccf7b),
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Color(0xFFdccf7b)),
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),
@@ -64,89 +65,131 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FutureBuilder<List<dynamic>>(
-              future: combinedFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: Container(
-                      height: MediaQuery.of(context).size.height,
-                      alignment: Alignment(0, 1),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.blue,
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'Loading your profile details...',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 60),
-                        Icon(
-                          Icons.error_outline,
-                          size: 50,
-                          color: Colors.red[400],
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Error loading data',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.red,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/bg.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Container(
+          color: Colors.black.withOpacity(0.7),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).padding.top + kToolbarHeight,
+                ),
+                FutureBuilder<List<dynamic>>(
+                  future: combinedFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: Container(
+                          height: MediaQuery.of(context).size.height,
+                          alignment: Alignment(0, 1),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.blue,
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'Loading your profile details...',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 8),
-                      ],
-                    ),
-                  );
-                } else if (snapshot.hasData) {
-                  final profile = snapshot.data![0] as RetailerProfile;
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildProfileHeaderCard(profile),
-                        const SizedBox(height: 16),
-                        _buildContactInfoCard(profile),
-                        const SizedBox(height: 16),
-                        _buildAddressCard(profile.address),
-                        const SizedBox(height: 16),
-                        _buildWalletBalanceCard(profile.walletBalance),
-                        const SizedBox(height: 16),
-                        _buildContactCard(profile.parentUser),
-                      ],
-                    ),
-                  );
-                } else {
-                  return const Center(child: Text('No data found'));
-                }
-              },
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 60),
+                            Icon(
+                              Icons.error_outline,
+                              size: 50,
+                              color: Colors.red[400],
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Failed loading profile',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                        ),
+                      );
+                    } else if (snapshot.hasData) {
+                      final profile = snapshot.data![0] as RetailerProfile;
+
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Container(
+                          height: 600,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                WoodContainer(
+                                  height: 240,
+                                  child: _buildProfileHeaderCard(profile),
+                                ),
+                                SizedBox(height: 20),
+
+                                WoodContainer(
+                                  height: 245,
+                                  child: _buildContactInfoCard(profile),
+                                ),
+                                SizedBox(height: 20),
+
+                                WoodContainer(
+                                  height: 270,
+                                  child: _buildAddressCard(profile.address),
+                                ),
+                                SizedBox(height: 20),
+
+                                WoodContainer(
+                                  height: 210,
+                                  child: _buildWalletBalanceCard(
+                                    profile.walletBalance,
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+
+                                WoodContainer(
+                                  height: 200,
+                                  child: _buildContactCard(profile.parentUser),
+                                ),
+                                SizedBox(height: 20),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return const Center(child: Text('No data found'));
+                    }
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -154,13 +197,12 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
 
   Widget _buildProfileHeaderCard(RetailerProfile profile) {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(6),
           gradient: LinearGradient(
             colors: [Colors.black, Color(0xFFdccf7b)],
             begin: Alignment.topLeft,
@@ -213,14 +255,9 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
   Widget _buildContactInfoCard(RetailerProfile profile) {
     return Card(
       elevation: 2,
-      color: const Color(0xff131313),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Color(0xFFdccf7b), width: 0.6),
-      ),
+      color: const Color(0xff202020),
       child: Padding(
         padding: const EdgeInsets.all(20),
-
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -270,11 +307,7 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
   Widget _buildAddressCard(Address address) {
     return Card(
       elevation: 2,
-      color: const Color(0xff131313),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Color(0xFFdccf7b), width: 0.6),
-      ),
+      color: const Color(0xff202020),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -358,11 +391,7 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
   Widget _buildWalletBalanceCard(WalletBalance walletBalance) {
     return Card(
       elevation: 2,
-      color: const Color(0xff131313),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Color(0xFFdccf7b), width: 0.6),
-      ),
+      color: const Color(0xff202020),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -501,11 +530,7 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
   Widget _buildContactCard(ParentUser parentUser) {
     return Card(
       elevation: 2,
-      color: const Color(0xff131313),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFFdccf7b), width: 0.6),
-      ),
+      color: const Color(0xff202020),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -555,7 +580,10 @@ class _RetailerProfileScreenState extends State<RetailerProfileScreen> {
           Expanded(
             child: Text(
               formatUserType(value),
-              style: const TextStyle(color: Color.fromARGB(255, 139, 122, 6), fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                color: Color.fromARGB(255, 139, 122, 6),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

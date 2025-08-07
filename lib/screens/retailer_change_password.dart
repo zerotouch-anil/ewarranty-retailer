@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:retailer_app/services/retailer_profile_service.dart';
 import 'package:retailer_app/utils/pixelutil.dart';
+import 'package:retailer_app/utils/wooden_container.dart';
 
 class RetailerChangePasswordScreen extends StatefulWidget {
   const RetailerChangePasswordScreen({super.key});
@@ -83,116 +84,156 @@ class _RetailerChangePasswordScreenState
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text(
           "Change Password",
           style: TextStyle(fontWeight: FontWeight.w400),
         ),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.blue,
+        centerTitle: true, // You can make it false if needed
+        foregroundColor: Color(0xFFdccf7b),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        centerTitle: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: ScreenUtil.unitHeight * 20,
-          vertical: ScreenUtil.unitHeight * 20,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPasswordField(
-              controller: _currentController,
-              label: "Current Password",
-              hint: "Enter your current password",
-              isVisible: _isCurrentPasswordVisible,
-              onVisibilityToggle: () {
-                setState(() {
-                  _isCurrentPasswordVisible = !_isCurrentPasswordVisible;
-                });
-              },
-              icon: Icons.lock_outline,
+      body: Stack(
+        children: [
+          // Background image with dark overlay
+          Positioned.fill(
+            child: Stack(
+              children: [
+                Image.asset(
+                  'assets/bg.jpg',
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+                Container(color: Colors.black.withOpacity(0.7)),
+              ],
             ),
-            SizedBox(height: ScreenUtil.unitHeight * 20),
-            _buildPasswordField(
-              controller: _newController,
-              label: "New Password",
-              hint: "Enter your new password",
-              isVisible: _isNewPasswordVisible,
-              onVisibilityToggle: () {
-                setState(() {
-                  _isNewPasswordVisible = !_isNewPasswordVisible;
-                });
-              },
-              icon: Icons.lock_reset,
-            ),
-            SizedBox(height: ScreenUtil.unitHeight * 20),
-            _buildPasswordField(
-              controller: _confirmController,
-              label: "Confirm New Password",
-              hint: "Re-enter your new password",
-              isVisible: _isConfirmPasswordVisible,
-              onVisibilityToggle: () {
-                setState(() {
-                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                });
-              },
-              icon: Icons.check_circle_outline,
-            ),
-            SizedBox(height: ScreenUtil.unitHeight * 40),
-            SizedBox(
-              width: double.infinity,
-              height: ScreenUtil.unitHeight * 65,
-              child:
-                  isLoading
-                      ? Container(
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        ),
-                      )
-                      : ElevatedButton(
-                        onPressed: _submit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.save_outlined, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text(
-                              "Update Password",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+          ),
+
+          // Foreground content
+          SafeArea(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: ScreenUtil.unitHeight * 20,
+                vertical: ScreenUtil.unitHeight * 20,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildPasswordField(
+                        controller: _currentController,
+                        label: "Current Password",
+                        hint: "Enter your current password",
+                        isVisible: _isCurrentPasswordVisible,
+                        onVisibilityToggle: () {
+                          setState(() {
+                            _isCurrentPasswordVisible =
+                                !_isCurrentPasswordVisible;
+                          });
+                        },
+                        icon: Icons.lock_outline,
                       ),
+                      SizedBox(height: ScreenUtil.unitHeight * 20),
+                      _buildPasswordField(
+                        controller: _newController,
+                        label: "New Password",
+                        hint: "Enter your new password",
+                        isVisible: _isNewPasswordVisible,
+                        onVisibilityToggle: () {
+                          setState(() {
+                            _isNewPasswordVisible = !_isNewPasswordVisible;
+                          });
+                        },
+                        icon: Icons.lock_reset,
+                      ),
+                      SizedBox(height: ScreenUtil.unitHeight * 20),
+                      _buildPasswordField(
+                        controller: _confirmController,
+                        label: "Confirm New Password",
+                        hint: "Re-enter your new password",
+                        isVisible: _isConfirmPasswordVisible,
+                        onVisibilityToggle: () {
+                          setState(() {
+                            _isConfirmPasswordVisible =
+                                !_isConfirmPasswordVisible;
+                          });
+                        },
+                        icon: Icons.check_circle_outline,
+                      ),
+                      SizedBox(height: ScreenUtil.unitHeight * 40),
+                      SizedBox(
+                        width: double.infinity,
+                        height: ScreenUtil.unitHeight * 70,
+                        child:
+                            isLoading
+                                ? Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.withOpacity(0.7),
+                                  ),
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                : WoodContainer(
+                                  height: 300,
+                                  child: ElevatedButton(
+                                    onPressed: _submit,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFFdccf7b),
+                                      foregroundColor: Colors.white,
+                                      elevation: 2,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: const [
+                                        Icon(
+                                          Icons.save_outlined,
+                                          color: Colors.black,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          "Update Password",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -213,12 +254,13 @@ class _RetailerChangePasswordScreenState
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: Colors.white,
           ),
         ),
         SizedBox(height: ScreenUtil.unitHeight * 10),
         TextField(
           controller: controller,
+          style: TextStyle(color: Color(0xFFdccf7b)),
           obscureText: !isVisible,
           decoration: InputDecoration(
             hintText: hint,
@@ -233,18 +275,18 @@ class _RetailerChangePasswordScreenState
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: Color(0xFFdccf7b)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: Color(0xFFdccf7b)),
             ),
             focusedBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(12)),
-              borderSide: BorderSide(color: Colors.blue, width: 2),
+              borderSide: BorderSide(color: Color(0xFFdccf7b), width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey[50],
+            fillColor: Color(0xff131313),
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),

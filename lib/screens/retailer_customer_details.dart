@@ -1,6 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:retailer_app/models/customer_details_model.dart';
 import 'package:retailer_app/services/customer_service.dart';
+import 'package:retailer_app/utils/wooden_container.dart';
 
 class ViewCustomer extends StatefulWidget {
   final String customerId;
@@ -13,88 +15,138 @@ class ViewCustomer extends StatefulWidget {
 
 class _ViewCustomerState extends State<ViewCustomer> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xff131313),
-      appBar: AppBar(
-        title: const Text(
-          'Customer Details',
-          style: TextStyle(fontWeight: FontWeight.w400),
-        ),
-        backgroundColor: Color(0xff131313),
-        foregroundColor: Color(0xFFdccf7b),
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: Color(0xFFdccf7b)),
-        ),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    extendBodyBehindAppBar: true,
+    backgroundColor: Colors.transparent,
+    appBar: AppBar(
+       centerTitle: true,
+      title: const Text(
+        'Customer Details',
+        style: TextStyle(fontWeight: FontWeight.w400),
       ),
-      body: FutureBuilder<ParticularCustomerData>(
-        future: fetchCustomerDetails(widget.customerId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Something went wrong!',
-                    style: TextStyle(fontSize: 16, color: Colors.red[700]),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          } else if (!snapshot.hasData) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.inbox_outlined, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No data available',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            final customer = snapshot.data!;
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildCustomerDetailsSection(customer.customerDetails),
-                  const SizedBox(height: 20),
-                  _buildProductDetailsSection(customer.productDetails),
-                  const SizedBox(height: 20),
-                  _buildProductImagesSection(customer.productImages),
-                  const SizedBox(height: 20),
-                  _buildInvoiceDetailsSection(customer.invoiceDetails),
-                  const SizedBox(height: 20),
-                  _buildWarrantyDetailsSection(customer.warrantyDetails),
-                  const SizedBox(height: 20),
-                  _buildAdditionalInfoSection(customer),
-                  const SizedBox(height: 20),
-                  _buildDatesSection(customer.dates),
-                ],
-              ),
-            );
-          }
-        },
+      backgroundColor: Colors.transparent,
+      foregroundColor: const Color(0xFFdccf7b),
+      elevation: 0,
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(height: 1, color: Color(0xFFdccf7b)),
       ),
-    );
-  }
+    ),
+    body: Stack(
+      children: [
+        Positioned.fill(
+          child: Stack(
+            children: [
+              Image.asset(
+                'assets/bg.jpg',
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+              Container(
+                color: Colors.black.withOpacity(0.7),
+              ),
+            ],
+          ),
+        ),
+
+        // Foreground content
+        FutureBuilder<ParticularCustomerData>(
+          future: fetchCustomerDetails(widget.customerId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Something went wrong!',
+                      style: TextStyle(fontSize: 16, color: Colors.red[700]),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            } else if (!snapshot.hasData) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.inbox_outlined, size: 64, color: Colors.grey[400]),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No data available',
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              final customer = snapshot.data!;
+              return SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      WoodContainer(
+                        height: 350,
+                        child: _buildCustomerDetailsSection(customer.customerDetails),
+                      ),
+                      const SizedBox(height: 30),
+                      WoodContainer(
+                        height: 360,
+                        child: _buildProductDetailsSection(customer.productDetails),
+                      ),
+                      const SizedBox(height: 30),
+                      WoodContainer(
+                        height: 200,
+                        child: _buildProductImagesSection(customer.productImages),
+                      ),
+                      const SizedBox(height: 30),
+                      WoodContainer(
+                        height: 380,
+                        child: _buildInvoiceDetailsSection(customer.invoiceDetails),
+                      ),
+                      const SizedBox(height: 30),
+                      WoodContainer(
+                        height: 380,
+                        child: _buildWarrantyDetailsSection(customer.warrantyDetails),
+                      ),
+                      const SizedBox(height: 30),
+                      WoodContainer(
+                        height: (customer.notes.toString().trim().isNotEmpty) ? 350 : 240,
+                        child: _buildAdditionalInfoSection(customer),
+                      ),
+                      const SizedBox(height: 30),
+                      WoodContainer(
+                        height: 170,
+                        child: _buildDatesSection(customer.dates),
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildSectionCard({
     required String title,
@@ -102,11 +154,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
     Color? borderColor,
   }) {
     return Card(
-      color: Color(0xFF131313),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Color(0xFFdccf7b), width: 1),
-      ),
+      color: Color(0xff202020),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -117,7 +165,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
@@ -139,7 +187,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 20, color: Colors.grey[600]),
+            Icon(icon, size: 20, color: Colors.grey[350]),
             const SizedBox(width: 12),
           ],
           Expanded(
@@ -149,7 +197,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
+                color: Colors.grey[500],
               ),
             ),
           ),
@@ -159,7 +207,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
               value.isEmpty ? ' Not provided' : value,
               style: TextStyle(
                 fontSize: 14,
-                color: value.isEmpty ? Colors.grey[500] : Colors.black87,
+                color: value.isEmpty ? Colors.grey[500] : Color(0xFFdccf7b),
                 fontWeight: value.isEmpty ? FontWeight.normal : FontWeight.w500,
               ),
             ),
@@ -194,11 +242,11 @@ class _ViewCustomerState extends State<ViewCustomer> {
             value: details.alternateNumber,
             icon: Icons.phone_android_outlined,
           ),
-          const Divider(height: 24),
+          const Divider(height: 24, color: Color(0xFFdccf7b)),
           _buildAddressSection(details.address),
         ],
       ),
-     borderColor: Colors.purple[600],
+      borderColor: Colors.purple[600],
     );
   }
 
@@ -216,14 +264,14 @@ class _ViewCustomerState extends State<ViewCustomer> {
       children: [
         Row(
           children: [
-            Icon(Icons.location_on_outlined, size: 20, color: Colors.grey[600]),
+            Icon(Icons.location_on_outlined, size: 20, color: Colors.grey[350]),
             const SizedBox(width: 12),
             Text(
               'Address',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
+                color: Colors.grey[500],
               ),
             ),
           ],
@@ -235,7 +283,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
             fullAddress.isEmpty ? 'Not provided' : fullAddress,
             style: TextStyle(
               fontSize: 14,
-              color: fullAddress.isEmpty ? Colors.grey[500] : Colors.black87,
+              color: fullAddress.isEmpty ? Colors.grey[500] : Color(0xFFdccf7b),
               fontWeight:
                   fullAddress.isEmpty ? FontWeight.normal : FontWeight.w500,
             ),
@@ -266,13 +314,14 @@ class _ViewCustomerState extends State<ViewCustomer> {
             icon: Icons.category_outlined,
           ),
           _buildInfoRow(
-            label: 'Serial Number',
+            label: 'Serial\nNumber',
             value: details.serialNumber,
             icon: Icons.pin_outlined,
           ),
           _buildInfoRow(
             label: 'Orignal Warranty',
-            value: details.orignalWarranty > 0 ? '${details.orignalWarranty}': '',
+            value:
+                details.orignalWarranty > 0 ? '${details.orignalWarranty}' : '',
             icon: Icons.pin_outlined,
           ),
           _buildInfoRow(
@@ -282,7 +331,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
           ),
         ],
       ),
-    borderColor: Colors.green[600],
+      borderColor: Colors.green[600],
     );
   }
 
@@ -471,9 +520,9 @@ class _ViewCustomerState extends State<ViewCustomer> {
           ),
           const SizedBox(height: 12),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 6),
             decoration: BoxDecoration(
-              color: isActive ? Colors.green[50] : Colors.red[50],
+              color: isActive ? Colors.transparent : Colors.transparent,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isActive ? Colors.green[200]! : Colors.red[200]!,
@@ -505,8 +554,6 @@ class _ViewCustomerState extends State<ViewCustomer> {
     );
   }
 
-
-
   Widget _buildAdditionalInfoSection(ParticularCustomerData customer) {
     return _buildSectionCard(
       title: 'Additional Information',
@@ -524,7 +571,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
           ),
           Row(
             children: [
-              Icon(Icons.toggle_on_outlined, size: 20, color: Colors.grey[600]),
+              Icon(Icons.toggle_on_outlined, size: 20, color: Colors.grey[350]),
               const SizedBox(width: 12),
               Expanded(
                 flex: 2,
@@ -533,7 +580,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey[700],
+                    color: Colors.grey[500],
                   ),
                 ),
               ),
@@ -546,12 +593,14 @@ class _ViewCustomerState extends State<ViewCustomer> {
                   ),
                   decoration: BoxDecoration(
                     color:
-                        customer.isActive ? Colors.green[50] : Colors.red[50],
+                        customer.isActive
+                            ? Colors.transparent
+                            : Colors.transparent,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color:
                           customer.isActive
-                              ? Colors.green[200]!
+                              ? Color(0xFFdccf7b)
                               : Colors.red[200]!,
                     ),
                   ),
@@ -576,7 +625,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.note_outlined, size: 20, color: Colors.grey[600]),
+                Icon(Icons.note_outlined, size: 20, color: Colors.grey[350]),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -587,7 +636,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Colors.grey[700],
+                          color: Colors.grey[500],
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -595,7 +644,7 @@ class _ViewCustomerState extends State<ViewCustomer> {
                         customer.notes,
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.black87,
+                          color: Color(0xFFdccf7b),
                           fontWeight: FontWeight.w500,
                         ),
                       ),

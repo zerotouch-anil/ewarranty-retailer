@@ -147,200 +147,208 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
   }
 
   // Calculate dynamic height based on screen size and content
-  double _calculateWoodContainerHeight(BuildContext context, CustomersData customer) {
+  double _calculateWoodContainerHeight(
+    BuildContext context,
+    CustomersData customer,
+  ) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    
-    double baseHeight = 50; 
-    double headerHeight = screenWidth * 0.12 + 20; 
-    double productInfoHeight = 35; 
-    double premiumAmountHeight = 55; 
-    double warrantyKeyHeight = 50; 
+
+    double baseHeight = 50;
+    double headerHeight = screenWidth * 0.12 + 20;
+    double productInfoHeight = 35;
+    double premiumAmountHeight = 55;
+    double warrantyKeyHeight = 50;
 
     double notesHeight = 0;
     if (customer.notes?.isNotEmpty == true) {
       notesHeight = 30;
     }
-    
-    double totalHeight = baseHeight + headerHeight + productInfoHeight + 
-                        premiumAmountHeight + warrantyKeyHeight + notesHeight;
-    
+
+    double totalHeight =
+        baseHeight +
+        headerHeight +
+        productInfoHeight +
+        premiumAmountHeight +
+        warrantyKeyHeight +
+        notesHeight;
+
     double minHeight = screenHeight * 0.25;
-    
+
     return totalHeight > minHeight ? totalHeight : minHeight;
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xff131313),
-      appBar: AppBar(
-        foregroundColor: Color(0xFFdccf7b),
-        backgroundColor: Color(0xff131313),
-        title: const Text(
-          'Customer List',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-        ),
-        elevation: 0,
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.transparent,
+    extendBodyBehindAppBar: true, // Allows AppBar to sit above background
+    appBar: AppBar(
+      foregroundColor: Color(0xFFdccf7b),
+      backgroundColor: Colors.transparent,
+      title: const Text(
+        'Customer List',
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  alignment: WrapAlignment.start,
+      elevation: 0,
+    ),
+    body: Stack(
+      children: [
+        // Background image with dark overlay
+        Positioned.fill(
+          child: Image.asset(
+            'assets/bg.jpg',
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned.fill(
+          child: Container(
+            color: Colors.black.withOpacity(0.7),
+          ),
+        ),
+        // Your main content
+        SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width > 600
-                          ? 250
-                          : MediaQuery.of(context).size.width / 2 - 24,
-                      child: TextField(
-                        readOnly: true,
-                        style: const TextStyle(color: Colors.white),
-                        controller: _startDateController,
-                        decoration: InputDecoration(
-                          labelText: 'Start Date',
-                          labelStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(
-                            Icons.calendar_today,
-                            color: Color(0xFF1976D2),
-                          ),
-                          filled: true,
-                          fillColor: Color(0xff131313),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 4,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Color(0xFFdccf7b),
-                              width: 0.5,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Color(0xFFdccf7b),
-                              width: 0.5,
-                            ),
-                          ),
-                        ),
-                        onTap: () => _pickDate(
-                          controller: _startDateController,
-                          isStart: true,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width > 600
-                          ? 250
-                          : MediaQuery.of(context).size.width / 2 - 24,
-                      child: TextField(
-                        readOnly: true,
-                        style: const TextStyle(color: Colors.white),
-                        controller: _endDateController,
-                        decoration: InputDecoration(
-                          labelText: 'End Date',
-                          labelStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(
-                            Icons.calendar_today,
-                            color: Color(0xFF1976D2),
-                          ),
-                          filled: true,
-                          fillColor: Color(0xff131313),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 4,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Color(0xFFdccf7b),
-                              width: 0.5,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Color(0xFFdccf7b),
-                              width: 0.5,
-                            ),
-                          ),
-                        ),
-                        onTap: () => _pickDate(
-                          controller: _endDateController,
-                          isStart: false,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      alignment: WrapAlignment.start,
                       children: [
-                        ElevatedButton.icon(
-                          onPressed: _isLoading ? null : _onSearchPressed,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1976D2),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 4,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 2,
-                          ),
-                          icon: _isLoading
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.search,
-                                  color: Colors.white,
-                                ),
-                          label: Text(
-                            _isLoading ? 'Searching...' : 'Search',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
+                        // Start Date
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width > 600
+                              ? 250
+                              : MediaQuery.of(context).size.width / 2 - 24,
+                          child: TextField(
+                            readOnly: true,
+                            style: const TextStyle(color: Colors.white),
+                            controller: _startDateController,
+                            decoration: _buildInputDecoration('Start Date'),
+                            onTap: () => _pickDate(
+                              controller: _startDateController,
+                              isStart: true,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        if (_paginationData != null)
-                          Text(
-                            '(${_paginationData?.totalData ?? '-'})',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blue,
+                        // End Date
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width > 600
+                              ? 250
+                              : MediaQuery.of(context).size.width / 2 - 24,
+                          child: TextField(
+                            readOnly: true,
+                            style: const TextStyle(color: Colors.white),
+                            controller: _endDateController,
+                            decoration: _buildInputDecoration('End Date'),
+                            onTap: () => _pickDate(
+                              controller: _endDateController,
+                              isStart: false,
                             ),
                           ),
+                        ),
+                        // Buttons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: _isLoading ? null : _onSearchPressed,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFdccf7b),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 4,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 2,
+                              ),
+                              icon: _isLoading
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.black),
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.search,
+                                      color: Colors.black,
+                                    ),
+                              label: Text(
+                                _isLoading ? 'Searching...' : 'Search',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            if (_paginationData != null)
+                              Text(
+                                '(${_paginationData?.totalData ?? '-'})',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFFdccf7b),
+                                ),
+                              ),
+                          ],
+                        ),
                       ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              Expanded(child: _buildCustomerList()),
+            ],
           ),
-          Expanded(child: _buildCustomerList()),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  
+  );
+}
 
+// Helper function for consistent TextField style
+InputDecoration _buildInputDecoration(String label) {
+  return InputDecoration(
+    labelText: label,
+    labelStyle: const TextStyle(color: Colors.white70),
+    prefixIcon: const Icon(
+      Icons.calendar_today,
+      color: Color(0xFFdccf7b),
+    ),
+    filled: true,
+    fillColor: Color(0xff131313),
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 4,
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(
+        color: Color(0xFFdccf7b),
+        width: 0.5,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(
+        color: Color(0xFFdccf7b),
+        width: 0.5,
+      ),
+    ),
+  );
+}
   Widget _buildCustomerList() {
     if (_isLoading && _allCustomers.isEmpty) {
       return const Center(
@@ -358,7 +366,7 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
             const Icon(Icons.error_outline, size: 64, color: Color(0xFFE53E3E)),
             const SizedBox(height: 16),
             Text(
-              'Something went wrong',
+              'Failed loading customers',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -367,10 +375,19 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.black),
+                side: MaterialStateProperty.all(
+                  BorderSide(
+                    color: Color(0xFFdccf7b),
+                    width: 1,
+                  ),
+                ),
+              ),
               onPressed: () => _fetchCustomers(isRefresh: true),
               child: const Text(
                 'Retry',
-                style: TextStyle(fontSize: 12, color: Colors.black),
+                style: TextStyle(fontSize: 12, color: Colors.white),
               ),
             ),
           ],
@@ -432,8 +449,9 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        ViewCustomer(customerId: customer.customerId),
+                    builder:
+                        (context) =>
+                            ViewCustomer(customerId: customer.customerId),
                   ),
                 );
               },
