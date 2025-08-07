@@ -218,7 +218,7 @@ class _CustomerFormState extends State<CustomerForm> {
     } else if (_currentPage == 2) {
       return const Color.fromARGB(255, 28, 105, 30);
     } else {
-      return Colors.blue[700]!;
+      return Colors.blue[900]!;
     }
   }
 
