@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:retailer_app/models/brands_model.dart';
 import 'package:retailer_app/models/categories_model.dart';
-import 'package:retailer_app/screens/components/add_customer_components/customer_details.dart';
-import 'package:retailer_app/screens/components/add_customer_components/invoice_details.dart';
-import 'package:retailer_app/screens/components/add_customer_components/product_details.dart';
+import 'package:retailer_app/screens/add_customer/second_part.dart';
+import 'package:retailer_app/screens/add_customer/third_part.dart';
+import 'package:retailer_app/screens/add_customer/first_part.dart';
 import 'package:retailer_app/services/catalog_service.dart';
 import 'package:retailer_app/services/customer_form_submit.dart';
 
-class CustomerForm extends StatefulWidget {
+class AddCustomerScreen extends StatefulWidget {
   final String categoryId;
   final String categoryName;
   final List<PercentItem> percentList;
 
-  const CustomerForm({
+  const AddCustomerScreen({
     super.key,
     required this.categoryId,
     required this.percentList,
@@ -20,15 +20,13 @@ class CustomerForm extends StatefulWidget {
   });
 
   @override
-  _CustomerFormState createState() => _CustomerFormState();
+  _AddCustomerScreenState createState() => _AddCustomerScreenState();
 }
 
-class _CustomerFormState extends State<CustomerForm> {
+class _AddCustomerScreenState extends State<AddCustomerScreen> {
   late Future<List<Brand>> _brandsFuture;
   int _currentPage = 0;
   final PageController _pageController = PageController();
-  bool _isPage0Valid = false;
-  bool _isPage1Valid = false;
 
   final Map<String, dynamic> _formData = {
     'customer': <String, String>{},
@@ -40,6 +38,8 @@ class _CustomerFormState extends State<CustomerForm> {
     'images': <String, dynamic>{
       'frontImage': null,
       'backImage': null,
+      'leftImage': null,
+      'rightImage': null,
       'additionalImages': <String>[],
     },
     'warranty': <String, dynamic>{
@@ -57,10 +57,35 @@ class _CustomerFormState extends State<CustomerForm> {
   @override
   void initState() {
     super.initState();
-
     _formData['product']['categoryId'] = widget.categoryId;
     _formData['product']['category'] = widget.categoryName;
     _brandsFuture = fetchBrands(widget.categoryId);
+  }
+
+  void _goToPage(int pageIndex) {
+    if (pageIndex >= 0 && pageIndex < 3) {
+      _pageController.animateToPage(
+        pageIndex,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void _nextPage() {
+    if (_currentPage < 2) {
+      _goToPage(_currentPage + 1);
+    }
+  }
+
+  void _previousPage() {
+    if (_currentPage > 0) {
+      _goToPage(_currentPage - 1);
+    }
+  }
+
+  void _submitForm() {
+    submitCustomerForm(context, _formData);
   }
 
   @override
@@ -121,73 +146,32 @@ class _CustomerFormState extends State<CustomerForm> {
                   onPageChanged:
                       (index) => setState(() => _currentPage = index),
                   children: [
-                    ProductDetailsScreen(
+                    FirstPart(
                       data: _formData['product'],
                       invoiceData: _formData['invoice'],
                       warrantyData: _formData['warranty'],
                       brands: brands,
                       percentList: widget.percentList,
-                      onValidityChanged: (isValid) {
-                        setState(() {
-                          _isPage0Valid = isValid;
-                        });
-                      },
+                      onNext: _nextPage,
+                      currentPage: 0,
+                      totalPages: 3,
                     ),
-                    CustomerDetailsScreen(
+                    SecondPart(
                       data: _formData['customer'],
-                      onValidityChanged2: (isValid) {
-                        setState(() {
-                          _isPage1Valid = isValid;
-                        });
-                      },
+                      onNext: _nextPage,
+                      onPrevious: _previousPage,
+                      currentPage: 1,
+                      totalPages: 3,
                     ),
-                    InvoiceDetailsScreen(
+                    ThirdPart(
                       data: _formData['invoice'],
                       productImg: _formData['images'],
                       warrantyData: _formData['warranty'],
                       productDetails: _formData['product'],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Navigation Buttons
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(color: Colors.grey),
-                child: Row(
-                  children: [
-                    if (_currentPage > 0)
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: _previousPage,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color.fromARGB(
-                              255,
-                              49,
-                              48,
-                              43,
-                            ),
-                            side: const BorderSide(
-                              color: Color.fromARGB(255, 75, 74, 70),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                          ),
-                          child: const Text('Previous'),
-                        ),
-                      ),
-                    if (_currentPage > 0) const SizedBox(width: 16),
-                    Expanded(
-                      flex: 2,
-                      child: ElevatedButton(
-                        onPressed: _getNextButtonAction(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _getButtonBackgroundColor(),
-                          foregroundColor: _getButtonForegroundColor(),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: Text(_currentPage == 2 ? 'Submit Form' : 'Next'),
-                      ),
+                      onPrevious: _previousPage,
+                      onSubmit: _submitForm,
+                      currentPage: 2,
+                      totalPages: 3,
                     ),
                   ],
                 ),
@@ -196,51 +180,6 @@ class _CustomerFormState extends State<CustomerForm> {
           );
         },
       ),
-    );
-  }
-
-  VoidCallback? _getNextButtonAction() {
-    if (_currentPage == 0 && !_isPage0Valid) return null;
-    if (_currentPage == 1 && !_isPage1Valid) return null;
-    if (_currentPage == 2) {
-      return () => submitCustomerForm(context, _formData);
-    }
-    return _nextPage;
-  }
-
-  Color _getButtonBackgroundColor() {
-    bool isCurrentPageInvalid =
-        (_currentPage == 0 && !_isPage0Valid) ||
-        (_currentPage == 1 && !_isPage1Valid);
-
-    if (isCurrentPageInvalid) {
-      return Colors.black;
-    } else if (_currentPage == 2) {
-      return const Color.fromARGB(255, 28, 105, 30);
-    } else {
-      return Colors.blue[900]!;
-    }
-  }
-
-  Color _getButtonForegroundColor() {
-    bool isCurrentPageInvalid =
-        (_currentPage == 0 && !_isPage0Valid) ||
-        (_currentPage == 1 && !_isPage1Valid);
-
-    return isCurrentPageInvalid ? Colors.grey.shade400 : Colors.white;
-  }
-
-  void _nextPage() {
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
-  }
-
-  void _previousPage() {
-    _pageController.previousPage(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
     );
   }
 }

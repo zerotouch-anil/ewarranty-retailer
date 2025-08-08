@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:retailer_app/models/customer_details_model.dart';
 import 'package:retailer_app/services/customer_service.dart';
@@ -15,138 +14,152 @@ class ViewCustomer extends StatefulWidget {
 
 class _ViewCustomerState extends State<ViewCustomer> {
   @override
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    extendBodyBehindAppBar: true,
-    backgroundColor: Colors.transparent,
-    appBar: AppBar(
-       centerTitle: true,
-      title: const Text(
-        'Customer Details',
-        style: TextStyle(fontWeight: FontWeight.w400),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      foregroundColor: const Color(0xFFdccf7b),
-      elevation: 0,
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: Color(0xFFdccf7b)),
-      ),
-    ),
-    body: Stack(
-      children: [
-        Positioned.fill(
-          child: Stack(
-            children: [
-              Image.asset(
-                'assets/bg.jpg',
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              Container(
-                color: Colors.black.withOpacity(0.7),
-              ),
-            ],
-          ),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          'Customer Details',
+          style: TextStyle(fontWeight: FontWeight.w400),
         ),
+        backgroundColor: Colors.transparent,
+        foregroundColor: const Color(0xFFdccf7b),
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: Color(0xFFdccf7b)),
+        ),
+      ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Stack(
+              children: [
+                Image.asset(
+                  'assets/bg.jpg',
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+                Container(color: Colors.black.withOpacity(0.7)),
+              ],
+            ),
+          ),
 
-        // Foreground content
-        FutureBuilder<ParticularCustomerData>(
-          future: fetchCustomerDetails(widget.customerId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 64, color: Colors.red),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Something went wrong!',
-                      style: TextStyle(fontSize: 16, color: Colors.red[700]),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              );
-            } else if (!snapshot.hasData) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.inbox_outlined, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No data available',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              final customer = snapshot.data!;
-              return SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
+          // Foreground content
+          FutureBuilder<ParticularCustomerData>(
+            future: fetchCustomerDetails(widget.customerId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 10),
-                      WoodContainer(
-                        height: 350,
-                        child: _buildCustomerDetailsSection(customer.customerDetails),
+                      Icon(Icons.error_outline, size: 64, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Something went wrong!',
+                        style: TextStyle(fontSize: 16, color: Colors.red[700]),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 30),
-                      WoodContainer(
-                        height: 360,
-                        child: _buildProductDetailsSection(customer.productDetails),
-                      ),
-                      const SizedBox(height: 30),
-                      WoodContainer(
-                        height: 200,
-                        child: _buildProductImagesSection(customer.productImages),
-                      ),
-                      const SizedBox(height: 30),
-                      WoodContainer(
-                        height: 380,
-                        child: _buildInvoiceDetailsSection(customer.invoiceDetails),
-                      ),
-                      const SizedBox(height: 30),
-                      WoodContainer(
-                        height: 380,
-                        child: _buildWarrantyDetailsSection(customer.warrantyDetails),
-                      ),
-                      const SizedBox(height: 30),
-                      WoodContainer(
-                        height: (customer.notes.toString().trim().isNotEmpty) ? 350 : 240,
-                        child: _buildAdditionalInfoSection(customer),
-                      ),
-                      const SizedBox(height: 30),
-                      WoodContainer(
-                        height: 170,
-                        child: _buildDatesSection(customer.dates),
-                      ),
-                      const SizedBox(height: 30),
                     ],
                   ),
-                ),
-              );
-            }
-          },
-        ),
-      ],
-    ),
-  );
-}
-
+                );
+              } else if (!snapshot.hasData) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.inbox_outlined,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No data available',
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                final customer = snapshot.data!;
+                return SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        WoodContainer(
+                          height: 350,
+                          child: _buildCustomerDetailsSection(
+                            customer.customerDetails,
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        WoodContainer(
+                          height: 360,
+                          child: _buildProductDetailsSection(
+                            customer.productDetails,
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        WoodContainer(
+                          height: 300,
+                          child: _buildProductImagesSection(
+                            customer.productImages,
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        WoodContainer(
+                          height: 380,
+                          child: _buildInvoiceDetailsSection(
+                            customer.invoiceDetails,
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        WoodContainer(
+                          height: 380,
+                          child: _buildWarrantyDetailsSection(
+                            customer.warrantyDetails,
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        WoodContainer(
+                          height:
+                              (customer.notes.toString().trim().isNotEmpty)
+                                  ? 350
+                                  : 240,
+                          child: _buildAdditionalInfoSection(customer),
+                        ),
+                        const SizedBox(height: 30),
+                        WoodContainer(
+                          height: 170,
+                          child: _buildDatesSection(customer.dates),
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildSectionCard({
     required String title,
@@ -339,6 +352,8 @@ Widget build(BuildContext context) {
     final List<String> allImages = [
       if (images.frontImage.isNotEmpty) images.frontImage,
       if (images.backImage.isNotEmpty) images.backImage,
+      if (images.leftImage.isNotEmpty) images.leftImage,
+      if (images.rightImage.isNotEmpty) images.rightImage,
       ...images.additionalImages,
     ];
 

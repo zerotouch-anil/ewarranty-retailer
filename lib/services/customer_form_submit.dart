@@ -54,6 +54,8 @@ Future<void> submitCustomerForm(
     "productImages": {
       "frontImage": formData['images']['frontImage'] ?? '', // Now a URL string
       "backImage": formData['images']['backImage'] ?? '', // Now a URL string
+      "leftImage": formData['images']['leftImage'] ?? '', // Now a URL string
+      "rightImage": formData['images']['rightImage'] ?? '', // Now a URL string
       "additionalImages":
           formData['images']['additionalImages'] ??
           [], // Now list of URL strings

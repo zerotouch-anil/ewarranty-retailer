@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:retailer_app/constants/config.dart';
 import 'package:retailer_app/models/categories_model.dart';
-import 'package:retailer_app/screens/retailer_add_customer.dart';
+import 'package:retailer_app/screens/add_customer/add_customer_screen.dart';
 import 'package:retailer_app/services/catalog_service.dart';
 
 class CategoriesComponent extends StatefulWidget {
@@ -163,7 +163,7 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
           context,
           MaterialPageRoute(
             builder:
-                (_) => CustomerForm(
+                (_) => AddCustomerScreen(
                   categoryId: category.categoryId,
                   categoryName: category.categoryName,
                   percentList: category.percentList,

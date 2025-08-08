@@ -2,7 +2,7 @@ class CustomersData {
   final String name;
   final String modelName;
   final String planId;
-  final int premiumAmount;
+  final num premiumAmount; // Changed from int to num
   final String warrantyKey;
   final String customerId;
   final DateTime createdDate;
@@ -26,11 +26,27 @@ class CustomersData {
   });
 
   factory CustomersData.fromJson(Map<String, dynamic> json) {
+    // Extract the premiumAmount as dynamic first
+    final dynamic premiumAmt = json['warrantyDetails']['premiumAmount'];
+
+    // Convert to num safely, defaulting to 0 if null or invalid
+    num parsedPremiumAmount;
+    if (premiumAmt is int) {
+      parsedPremiumAmount = premiumAmt;
+    } else if (premiumAmt is double) {
+      parsedPremiumAmount = premiumAmt;
+    } else if (premiumAmt is String) {
+      // Optional: try parsing from string if your JSON sometimes gives string
+      parsedPremiumAmount = num.tryParse(premiumAmt) ?? 0;
+    } else {
+      parsedPremiumAmount = 0;
+    }
+
     return CustomersData(
       name: json['customerDetails']['name'] ?? '',
       modelName: json['productDetails']['modelName'] ?? '',
       planId: json['warrantyDetails']['planId'] ?? '',
-      premiumAmount: json['warrantyDetails']['premiumAmount'] ?? 0,
+      premiumAmount: parsedPremiumAmount,
       warrantyKey: json['warrantyKey'] ?? '',
       customerId: json['customerId']?.toString() ?? '',
       createdDate: DateTime.parse(json['dates']['createdDate']),

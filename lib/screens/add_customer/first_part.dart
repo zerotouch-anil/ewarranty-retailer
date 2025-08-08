@@ -2,30 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:retailer_app/models/brands_model.dart';
 import 'package:retailer_app/models/categories_model.dart';
 import 'package:intl/intl.dart';
+import 'package:retailer_app/utils/shared_preferences.dart';
+import 'package:retailer_app/utils/wooden_container.dart';
 
-class ProductDetailsScreen extends StatefulWidget {
-  final void Function(bool isValid) onValidityChanged;
+class FirstPart extends StatefulWidget {
   final Map<String, dynamic> data;
   final Map<String, dynamic> invoiceData;
   final Map<String, dynamic> warrantyData;
   final List<PercentItem> percentList;
   final List<Brand> brands;
 
-  const ProductDetailsScreen({
+  final VoidCallback onNext;
+  final int currentPage;
+  final int totalPages;
+
+  const FirstPart({
     super.key,
     required this.data,
     required this.invoiceData,
     required this.warrantyData,
     required this.percentList,
     required this.brands,
-    required this.onValidityChanged,
+
+    required this.onNext,
+    required this.currentPage,
+    required this.totalPages,
   });
 
   @override
-  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+  State<FirstPart> createState() => _FirstPartState();
 }
 
-class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+class _FirstPartState extends State<FirstPart> {
   static const Color _goldenColor = Color(0xFFdccf7b);
 
   Brand? selectedBrand;
@@ -45,39 +53,150 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     super.dispose();
   }
 
-  void _checkFormValidity() {
-
-    print("brandId: ${widget.data['brandId']}");
-    print("purchasePrice: ${widget.data['purchasePrice']} (${widget.data['purchasePrice'].runtimeType})");
-    print("orignalWarranty: ${widget.data['orignalWarranty']} (${widget.data['orignalWarranty'].runtimeType})");
-    print("invoiceDate: ${widget.invoiceData['invoiceDate']}");
-    print("warrantyPeriod: ${widget.warrantyData['warrantyPeriod']}");
-    print("premiumAmount: ${widget.warrantyData['premiumAmount']}");
-
-    final isValid =
-        widget.data['brandId'] != null &&
+  // VALIDATION CHECK
+  bool _isFormFirstComplete() {
+    return widget.data['brandId'] != null &&
         widget.data['purchasePrice'] != null &&
         widget.data['orignalWarranty'] != null &&
         widget.invoiceData['invoiceDate'] != null &&
         widget.warrantyData['warrantyPeriod'] != null &&
         widget.warrantyData['premiumAmount'] != null;
-
-    widget.onValidityChanged(isValid);
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
+    return Scaffold(
+      backgroundColor: Color(0xff131313),
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             _buildBrandDropdown(),
             _buildPurchasePriceField(),
             _buildOriginalWarrantyDropdown(),
             _buildDatePicker(),
             if (_isCalculationDataAvailable()) ..._buildCalculationSection(),
+            const SizedBox(height: 100),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(color: Colors.grey),
+        child: Row(
+          children: [
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed:
+                    _isFormFirstComplete()
+                        ? () async {
+                          final remainingAmount =
+                              SharedPreferenceHelper.instance.getInt(
+                                'remainingAmount',
+                              ) ??
+                              0;
+                          final premiumAmount =
+                              widget.warrantyData['premiumAmount'] ?? 0;
+
+                          if (premiumAmount > remainingAmount) {
+                            // Show popup
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 30,
+                                  ),
+                                  child: WoodContainer(
+                                    height: 250,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Insufficient Balance',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 22,
+                                              letterSpacing: 1,
+                                            ),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                          const Text(
+                                            'Your wallet balance is insufficient to proceed with this transaction.\n'
+                                            'Please add funds to your wallet and try again.',
+                                            style: TextStyle(
+                                              color: Color(0xFFdccf7b),
+                                              fontSize: 14,
+                                              height: 1.4,
+                                            ),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              TextButton(
+                                                style: TextButton.styleFrom(
+                                                  backgroundColor: const Color(
+                                                    0xFFdccf7b,
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 10,
+                                                      ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
+                                                  ),
+                                                ),
+                                                onPressed:
+                                                    () =>
+                                                        Navigator.pop(context),
+                                                child: const Text(
+                                                  'OK',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            widget.onNext();
+                          }
+                        }
+                        : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue[900]!,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text('Next'),
+              ),
+            ),
           ],
         ),
       ),
@@ -130,7 +249,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               widget.data['brand'] = brand.brandName;
               widget.data['brandId'] = brand.brandId;
             });
-            _checkFormValidity();
+            _isFormFirstComplete();
           }
         },
       ),
@@ -167,7 +286,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           setState(() {
             widget.data['purchasePrice'] = value.isNotEmpty ? value : null;
           });
-          _checkFormValidity();
+          _isFormFirstComplete();
         },
       ),
     );
@@ -224,7 +343,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             setState(() {
               widget.data['orignalWarranty'] = value;
             });
-            _checkFormValidity();
+            _isFormFirstComplete();
           }
         },
       ),
@@ -286,7 +405,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             setState(() {
               widget.invoiceData["invoiceDate"] = picked;
             });
-            _checkFormValidity();
+            _isFormFirstComplete();
           }
         },
         child: Container(
@@ -457,7 +576,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       widget.warrantyData['warrantyPeriod'] = item.duration;
                       widget.warrantyData['premiumAmount'] = calculatedAmount;
                     });
-                    _checkFormValidity();
+                    _isFormFirstComplete();
                   },
                   icon: const Icon(Icons.add, size: 16, color: Colors.white),
                   label: const Text(

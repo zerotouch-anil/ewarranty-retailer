@@ -31,7 +31,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       key: _scaffoldKey,
-      body: Stack(  
+      body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset('assets/bg.jpg', fit: BoxFit.cover),
@@ -899,24 +899,24 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
             height: 200,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Text(
-                    'Logout',
-                    style: TextStyle(
-                      color: Color(0xFFdccf7b),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25
-                    ),
+              children: [
+                const Text(
+                  'Logout',
+                  style: TextStyle(
+                    color: Color(0xFFdccf7b),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
                   ),
-                  const Text(
-                'Are you sure you want to logout?',
-                style: TextStyle(color: Color(0xFFdccf7b)),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextButton(
+                ),
+                const Text(
+                  'Are you sure you want to logout?',
+                  style: TextStyle(color: Color(0xFFdccf7b)),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text(
                         'Cancel',
@@ -924,129 +924,56 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
                       ),
                     ),
                     ElevatedButton(
-                  onPressed: () async {
-                    final navigator = Navigator.of(context);
-                    final scaffoldMessenger = ScaffoldMessenger.of(context);
-            
-                    // Close the dialog
-                    navigator.pop();
-            
-                    // Clear token from SharedPreferences
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.remove('token');
-            
-                    if (!context.mounted) return;
-            
-                    navigator.pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
-                      (route) => false,
-                    );
-            
-                    scaffoldMessenger.showSnackBar(
-                      const SnackBar(
-                        content: Row(
-                          children: [
-                            Icon(Icons.logout, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text('Logged out successfully'),
-                          ],
+                      onPressed: () async {
+                        final navigator = Navigator.of(context);
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+                        // Close the dialog
+                        navigator.pop();
+
+                        // Clear token from SharedPreferences
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.remove('token');
+
+                        if (!context.mounted) return;
+
+                        navigator.pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                          (route) => false,
+                        );
+
+                        scaffoldMessenger.showSnackBar(
+                          const SnackBar(
+                            content: Row(
+                              children: [
+                                Icon(Icons.logout, color: Colors.white),
+                                SizedBox(width: 8),
+                                Text('Logged out successfully'),
+                              ],
+                            ),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade600,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        backgroundColor: Colors.green,
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade600,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      child: const Text('Logout'),
                     ),
-                  ),
-                  child: const Text('Logout', ),
+                  ],
                 ),
-                
-                ],
-              ),
-                ],
-              ),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
-  // void _showLogoutDialog(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         backgroundColor: const Color(0xff131313),
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(16),
-  //         ),
-  //         title: const Text(
-  //           'Logout',
-  //           style: TextStyle(
-  //             color: Color(0xFFdccf7b),
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         ),
-  //         content: const Text(
-  //           'Are you sure you want to logout?',
-  //           style: TextStyle(color: Color(0xFFdccf7b)),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.pop(context),
-  //             child: const Text(
-  //               'Cancel',
-  //               style: TextStyle(color: Colors.white),
-  //             ),
-  //           ),
-  //           ElevatedButton(
-  //             onPressed: () async {
-  //               final navigator = Navigator.of(context);
-  //               final scaffoldMessenger = ScaffoldMessenger.of(context);
-
-  //               // Close the dialog
-  //               navigator.pop();
-
-  //               // Clear token from SharedPreferences
-  //               final prefs = await SharedPreferences.getInstance();
-  //               await prefs.remove('token');
-
-  //               if (!context.mounted) return;
-
-  //               navigator.pushAndRemoveUntil(
-  //                 MaterialPageRoute(builder: (context) => const LoginScreen()),
-  //                 (route) => false,
-  //               );
-
-  //               scaffoldMessenger.showSnackBar(
-  //                 const SnackBar(
-  //                   content: Row(
-  //                     children: [
-  //                       Icon(Icons.logout, color: Colors.white),
-  //                       SizedBox(width: 8),
-  //                       Text('Logged out successfully'),
-  //                     ],
-  //                   ),
-  //                   backgroundColor: Colors.green,
-  //                 ),
-  //               );
-  //             },
-  //             style: ElevatedButton.styleFrom(
-  //               backgroundColor: Colors.red.shade600,
-  //               foregroundColor: Colors.white,
-  //               shape: RoundedRectangleBorder(
-  //                 borderRadius: BorderRadius.circular(8),
-  //               ),
-  //             ),
-  //             child: const Text('Logout'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 }

@@ -158,11 +158,15 @@ class InvoiceDetails {
 class ProductImages {
   final String frontImage;
   final String backImage;
+  final String leftImage;
+  final String rightImage;
   final List<String> additionalImages;
 
   ProductImages({
     required this.frontImage,
     required this.backImage,
+    required this.leftImage,
+    required this.rightImage,
     required this.additionalImages,
   });
 
@@ -170,6 +174,8 @@ class ProductImages {
     return ProductImages(
       frontImage: json['frontImage'] ?? '',
       backImage: json['backImage'] ?? '',
+      leftImage: json['leftImage'] ?? '',
+      rightImage: json['rightImage'] ?? '',
       additionalImages: List<String>.from(json['additionalImages'] ?? []),
     );
   }
