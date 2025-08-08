@@ -155,7 +155,7 @@ class _RetailerDashboardState extends State<RetailerDashboard> {
           ),
           SizedBox(height: 20),
 
-          WoodContainer(height: 320, child: CategoriesComponent()),
+          WoodContainer(height: 380, child: CategoriesComponent()),
           SizedBox(height: 20),
 
           WoodContainer(height: 190, child: _buildActionButtons()),

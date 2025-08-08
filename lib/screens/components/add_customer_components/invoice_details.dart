@@ -65,7 +65,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
             ),
             SizedBox(height: 16),
             _buildSimpleField('Product Name', 'modelName'),
-            _buildSimpleField('Serial Number / IMEI Number', 'serialNumber'),
+            _buildSimpleField('Serial / Unique / IMEI Number', 'serialNumber'),
             _buildSimpleField('Invoice Number', 'invoiceNumber'),
             SizedBox(height: 16),
 

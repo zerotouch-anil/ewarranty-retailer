@@ -177,178 +177,170 @@ class _RetailerViewCustomersState extends State<RetailerViewCustomers> {
 
     return totalHeight > minHeight ? totalHeight : minHeight;
   }
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.transparent,
-    extendBodyBehindAppBar: true, // Allows AppBar to sit above background
-    appBar: AppBar(
-      foregroundColor: Color(0xFFdccf7b),
-      backgroundColor: Colors.transparent,
-      title: const Text(
-        'Customer List',
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-      ),
-      elevation: 0,
-    ),
-    body: Stack(
-      children: [
-        // Background image with dark overlay
-        Positioned.fill(
-          child: Image.asset(
-            'assets/bg.jpg',
-            fit: BoxFit.cover,
-          ),
-        ),
-        Positioned.fill(
-          child: Container(
-            color: Colors.black.withOpacity(0.7),
-          ),
-        ),
-        // Your main content
-        SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      alignment: WrapAlignment.start,
-                      children: [
-                        // Start Date
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width > 600
-                              ? 250
-                              : MediaQuery.of(context).size.width / 2 - 24,
-                          child: TextField(
-                            readOnly: true,
-                            style: const TextStyle(color: Colors.white),
-                            controller: _startDateController,
-                            decoration: _buildInputDecoration('Start Date'),
-                            onTap: () => _pickDate(
-                              controller: _startDateController,
-                              isStart: true,
-                            ),
-                          ),
-                        ),
-                        // End Date
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width > 600
-                              ? 250
-                              : MediaQuery.of(context).size.width / 2 - 24,
-                          child: TextField(
-                            readOnly: true,
-                            style: const TextStyle(color: Colors.white),
-                            controller: _endDateController,
-                            decoration: _buildInputDecoration('End Date'),
-                            onTap: () => _pickDate(
-                              controller: _endDateController,
-                              isStart: false,
-                            ),
-                          ),
-                        ),
-                        // Buttons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: _isLoading ? null : _onSearchPressed,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFdccf7b),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 4,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 2,
-                              ),
-                              icon: _isLoading
-                                  ? const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.black),
-                                      ),
-                                    )
-                                  : const Icon(
-                                      Icons.search,
-                                      color: Colors.black,
-                                    ),
-                              label: Text(
-                                _isLoading ? 'Searching...' : 'Search',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            if (_paginationData != null)
-                              Text(
-                                '(${_paginationData?.totalData ?? '-'})',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFFdccf7b),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(child: _buildCustomerList()),
-            ],
-          ),
-        ),
-      ],
-    ),
-  
-  );
-}
 
-// Helper function for consistent TextField style
-InputDecoration _buildInputDecoration(String label) {
-  return InputDecoration(
-    labelText: label,
-    labelStyle: const TextStyle(color: Colors.white70),
-    prefixIcon: const Icon(
-      Icons.calendar_today,
-      color: Color(0xFFdccf7b),
-    ),
-    filled: true,
-    fillColor: Color(0xff131313),
-    contentPadding: const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 4,
-    ),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(
-        color: Color(0xFFdccf7b),
-        width: 0.5,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true, // Allows AppBar to sit above background
+      appBar: AppBar(
+        foregroundColor: Color(0xFFdccf7b),
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          'Customer List',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
+        elevation: 0,
       ),
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(
-        color: Color(0xFFdccf7b),
-        width: 0.5,
+      body: Stack(
+        children: [
+          // Background image with dark overlay
+          Positioned.fill(
+            child: Image.asset('assets/bg.jpg', fit: BoxFit.cover),
+          ),
+          Positioned.fill(
+            child: Container(color: Colors.black.withOpacity(0.7)),
+          ),
+          // Your main content
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        alignment: WrapAlignment.start,
+                        children: [
+                          // Start Date
+                          SizedBox(
+                            width:
+                                MediaQuery.of(context).size.width > 600
+                                    ? 250
+                                    : MediaQuery.of(context).size.width / 2 -
+                                        24,
+                            child: TextField(
+                              readOnly: true,
+                              style: const TextStyle(color: Colors.white),
+                              controller: _startDateController,
+                              decoration: _buildInputDecoration('Start Date'),
+                              onTap:
+                                  () => _pickDate(
+                                    controller: _startDateController,
+                                    isStart: true,
+                                  ),
+                            ),
+                          ),
+                          // End Date
+                          SizedBox(
+                            width:
+                                MediaQuery.of(context).size.width > 600
+                                    ? 250
+                                    : MediaQuery.of(context).size.width / 2 -
+                                        24,
+                            child: TextField(
+                              readOnly: true,
+                              style: const TextStyle(color: Colors.white),
+                              controller: _endDateController,
+                              decoration: _buildInputDecoration('End Date'),
+                              onTap:
+                                  () => _pickDate(
+                                    controller: _endDateController,
+                                    isStart: false,
+                                  ),
+                            ),
+                          ),
+                          // Buttons
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: _isLoading ? null : _onSearchPressed,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFdccf7b),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 4,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
+                                ),
+                                icon:
+                                    _isLoading
+                                        ? const SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                  Colors.black,
+                                                ),
+                                          ),
+                                        )
+                                        : const Icon(
+                                          Icons.search,
+                                          color: Colors.black,
+                                        ),
+                                label: Text(
+                                  _isLoading ? 'Searching...' : 'Search',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              if (_paginationData != null)
+                                Text(
+                                  '(${_paginationData?.totalData ?? '-'})',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFFdccf7b),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(child: _buildCustomerList()),
+              ],
+            ),
+          ),
+        ],
       ),
-    ),
-  );
-}
+    );
+  }
+
+  // Helper function for consistent TextField style
+  InputDecoration _buildInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.white70),
+      prefixIcon: const Icon(Icons.calendar_today, color: Color(0xFFdccf7b)),
+      filled: true,
+      fillColor: Color(0xff131313),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Color(0xFFdccf7b), width: 0.5),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Color(0xFFdccf7b), width: 0.5),
+      ),
+    );
+  }
+
   Widget _buildCustomerList() {
     if (_isLoading && _allCustomers.isEmpty) {
       return const Center(
@@ -378,10 +370,7 @@ InputDecoration _buildInputDecoration(String label) {
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.black),
                 side: MaterialStateProperty.all(
-                  BorderSide(
-                    color: Color(0xFFdccf7b),
-                    width: 1,
-                  ),
+                  BorderSide(color: Color(0xFFdccf7b), width: 1),
                 ),
               ),
               onPressed: () => _fetchCustomers(isRefresh: true),
@@ -523,40 +512,82 @@ InputDecoration _buildInputDecoration(String label) {
                       const SizedBox(height: 16),
 
                       /// --- Product Info ---
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.devices,
-                              size: 16,
-                              color: Color(0xFF10B981),
+                      Row(
+                        children: [
+                          // Card for Model Name
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
                             ),
-                            const SizedBox(width: 6),
-                            Flexible(
-                              child: Text(
-                                customer.modelName,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.036,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF10B981),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.devices,
+                                  size: 16,
+                                  color: Color(0xFF10B981),
                                 ),
-                              ),
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Text(
+                                    customer.modelName,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: screenWidth * 0.036,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF10B981),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
 
+                          const SizedBox(width: 8), 
+                      
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade500.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.category,
+                                  size: 16,
+                                  color: Colors.orange.shade600,
+                                ),
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Text(
+                                    customer.category.isNotEmpty
+                                        ? customer.category
+                                        : 'N/A',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: screenWidth * 0.036,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.orange.shade600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 12),
 
                       /// --- Premium Amount ---

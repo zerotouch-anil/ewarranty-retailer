@@ -205,440 +205,85 @@ class _HistoryDataState extends State<HistoryData> {
         return Icons.swap_horiz;
     }
   }
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    extendBodyBehindAppBar: true,
-    appBar: AppBar(
-      title: const Text('Transaction History'),
-      backgroundColor: Colors.transparent,
-      foregroundColor: Color(0xFFdccf7b),
-      elevation: 0,
-    ),
-    body: Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/bg.jpg'),
-          fit: BoxFit.cover,
-        ),
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text('Transaction History'),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Color(0xFFdccf7b),
+        elevation: 0,
       ),
-      child: Container(
-        color: Colors.black.withOpacity(0.7),
-        child: Column(
-          children: [
-            // Add padding to account for app bar
-            SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight),
-            
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: _selectStartDate,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Color(0xFFdccf7b)),
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: const Color(0xff131313),
-                                  ),
-
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_today,
-                                        size: 16,
-                                        color: Color(0xFFdccf7b),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Start Date',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.grey[600],
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Text(
-                                              _formatDateShort(_startDate),
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: _selectEndDate,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Color(0xFFdccf7b)),
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: const Color(0xff131313),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_today,
-                                        size: 16,
-                                        color: Color(0xFFdccf7b),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'End Date',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.grey[600],
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Text(
-                                              _formatDateShort(_endDate),
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Transaction Type Filter Row
-                  Row(
-                    children: [
-                      const Icon(Icons.filter_list, color: Color(0xFFdccf7b)),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Filter by ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: Color(0xFFdccf7b),
-                        ),
-                      ),
-
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          height: 38,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Color(0xFFdccf7b)),
-                            borderRadius: BorderRadius.circular(8),
-                            color: const Color(0xff131313),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: _selectedTransactionType,
-                              onChanged: _onTransactionTypeChanged,
-                              isExpanded: true,
-                              items:
-                                  _transactionTypes.map((String option) {
-                                    return DropdownMenuItem<String>(
-                                      value: option,
-                                      child: Text(
-                                        option,
-                                        style: TextStyle(
-                                          color:
-                                              option == 'ALL'
-                                                  ? Colors.grey[600]
-                                                  : _getTransactionTypeColor(
-                                                    option,
-                                                  ),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/bg.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Container(
+          color: Colors.black.withOpacity(0.7),
+          child: Column(
+            children: [
+              // Add padding to account for app bar
+              SizedBox(
+                height: MediaQuery.of(context).padding.top + kToolbarHeight,
               ),
-            ),
 
-            // Data List Section
-            Expanded(
-              child:
-                  _allHistoryData.isEmpty && !_isLoading
-                      ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.error_outline, size: 64, color: Color(0xFFE53E3E)),
-                            const SizedBox(height: 16),
-                            Text(
-                              _selectedTransactionType == 'ALL'
-                                  ? 'No history data found for the selected date range.'
-                                  : 'No $_selectedTransactionType transactions found for the selected date range.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[600],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () => _loadData(isRefresh: true),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                  Colors.black,
-                                ),
-                                side: MaterialStateProperty.all(
-                                  BorderSide(color: Color(0xFFdccf7b), width: 1),
-                                ),
-                              ),
-                              child: const Text(
-                                'Refresh',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      : RefreshIndicator(
-                        onRefresh: () => _loadData(isRefresh: true),
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.all(16),
-                          itemCount:
-                              _allHistoryData.length + (_hasMoreData ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            // Loading indicator at bottom
-                            if (index == _allHistoryData.length) {
-                              return _isLoading
-                                  ? const Padding(
-                                    padding: EdgeInsets.all(16),
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.deepPurple,
-                                      ),
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: _selectStartDate,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
                                     ),
-                                  )
-                                  : const SizedBox.shrink();
-                            }
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Color(0xFFdccf7b),
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: const Color(0xff131313),
+                                    ),
 
-                            final history = _allHistoryData[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: WoodContainer(
-                                height: 290,
-                                child: Card(
-                                  elevation: 4,
-                                  color: const Color(0xff202020),
-
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                    child: Row(
                                       children: [
-                                        // Header Row
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 6,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: _getTransactionTypeColor(
-                                                  history.transactionType,
-                                                ).withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                border: Border.all(
-                                                  color: _getTransactionTypeColor(
-                                                    history.transactionType,
-                                                  ),
-                                                  width: 1,
-                                                ),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Icon(
-                                                    _getTransactionTypeIcon(
-                                                      history.transactionType,
-                                                    ),
-                                                    size: 16,
-                                                    color:
-                                                        _getTransactionTypeColor(
-                                                          history.transactionType,
-                                                        ),
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    history.transactionType,
-                                                    style: TextStyle(
-                                                      color:
-                                                          _getTransactionTypeColor(
-                                                            history
-                                                                .transactionType,
-                                                          ),
-                                                      fontWeight: FontWeight.w600,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Text(
-                                              history.transactionType ==
-                                                      "WARRANTY_USAGE"
-                                                  ? '-₹${history.amount}'
-                                                  : '₹${history.amount}',
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                                color: _getTransactionTypeColor(
-                                                  history.transactionType,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                        const Icon(
+                                          Icons.calendar_today,
+                                          size: 16,
+                                          color: Color(0xFFdccf7b),
                                         ),
-
-                                        const SizedBox(height: 16),
-
-                                        // Customer Information
-                                        if (history.transactionType ==
-                                            "WARRANTY_USAGE")
-                                          _buildInfoRow(
-                                            'Customer Name',
-                                            history
-                                                    .customerDetails
-                                                    ?.customerName ??
-                                                'n/a',
-                                            Icons.person,
-                                          ),
-
-                                        const SizedBox(height: 8),
-
-                                        // Warranty Key
-                                        if (history.transactionType ==
-                                            "WARRANTY_USAGE")
-                                          _buildInfoRow(
-                                            'Warranty Key',
-                                            history.warrantyKey ?? 'n/a',
-                                            Icons.vpn_key,
-                                          ),
-
-                                        if (history.transactionType ==
-                                            "ALLOCATION")
-                                          _buildInfoRow(
-                                            'Transaction Id',
-                                            history.transactionId,
-                                            Icons.vpn_key,
-                                          ),
-
-                                        const SizedBox(height: 8),
-
-                                        // User Types Row
-                                        Row(
-                                          children: [
-                                            if (history.transactionType ==
-                                                "ALLOCATION")
-                                              Expanded(
-                                                child: _buildInfoRow(
-                                                  'From',
-                                                  history.fromUser != null
-                                                      ? '${history.fromUser!.name} (${history.fromUser!.userType})'
-                                                      : 'n/a',
-                                                  Icons.person_outline,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: _buildInfoRow(
-                                                'Notes',
-                                                history.notes ?? "n/a",
-                                                Icons.notes,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-
-                                        const SizedBox(height: 12),
-
-                                        // Date
-                                        Container(
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[600],
-                                            borderRadius: BorderRadius.circular(
-                                              6,
-                                            ),
-                                          ),
-                                          child: Row(
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              const Icon(
-                                                Icons.schedule,
-                                                size: 16,
-                                                color: Colors.white,
-                                              ),
-                                              const SizedBox(width: 8),
                                               Text(
-                                                _formatDate(
-                                                  history.transactionDate,
-                                                ),
+                                                'Start Date',
                                                 style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12,
+                                                  fontSize: 10,
+                                                  color: Colors.grey[600],
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              Text(
+                                                _formatDateShort(_startDate),
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.grey[600],
                                                 ),
                                               ),
                                             ],
@@ -649,17 +294,513 @@ Widget build(BuildContext context) {
                                   ),
                                 ),
                               ),
-                            );
-                          },
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: _selectEndDate,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Color(0xFFdccf7b),
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: const Color(0xff131313),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.calendar_today,
+                                          size: 16,
+                                          color: Color(0xFFdccf7b),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'End Date',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.grey[600],
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              Text(
+                                                _formatDateShort(_endDate),
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-            ),
-          ],
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Transaction Type Filter Row
+                    Row(
+                      children: [
+                        const Icon(Icons.filter_list, color: Color(0xFFdccf7b)),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Filter by ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            color: Color(0xFFdccf7b),
+                          ),
+                        ),
+
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                            height: 38,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xFFdccf7b)),
+                              borderRadius: BorderRadius.circular(8),
+                              color: const Color(0xff131313),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: _selectedTransactionType,
+                                onChanged: _onTransactionTypeChanged,
+                                isExpanded: true,
+                                items:
+                                    _transactionTypes.map((String option) {
+                                      return DropdownMenuItem<String>(
+                                        value: option,
+                                        child: Text(
+                                          option,
+                                          style: TextStyle(
+                                            color:
+                                                option == 'ALL'
+                                                    ? Colors.grey[600]
+                                                    : _getTransactionTypeColor(
+                                                      option,
+                                                    ),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Data List Section
+              Expanded(
+                child:
+                    _allHistoryData.isEmpty && !_isLoading
+                        ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 64,
+                                color: Color(0xFFE53E3E),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                _selectedTransactionType == 'ALL'
+                                    ? 'No history data found for the selected date range.'
+                                    : 'No $_selectedTransactionType transactions found for the selected date range.',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () => _loadData(isRefresh: true),
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Colors.black,
+                                  ),
+                                  side: MaterialStateProperty.all(
+                                    BorderSide(
+                                      color: Color(0xFFdccf7b),
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Refresh',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                        : RefreshIndicator(
+                          onRefresh: () => _loadData(isRefresh: true),
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            padding: const EdgeInsets.all(16),
+                            itemCount:
+                                _allHistoryData.length + (_hasMoreData ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              // Loading indicator at bottom
+                              if (index == _allHistoryData.length) {
+                                return _isLoading
+                                    ? const Padding(
+                                      padding: EdgeInsets.all(16),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.deepPurple,
+                                        ),
+                                      ),
+                                    )
+                                    : const SizedBox.shrink();
+                              }
+
+                              final history = _allHistoryData[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: WoodContainer(
+                                  height:
+                                      (history.notes != null &&
+                                              history.notes!.isNotEmpty)
+                                          ? 320
+                                          : 250,
+                                  child: Card(
+                                    elevation: 4,
+                                    color: const Color(0xff202020),
+
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Header Row
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      _getTransactionTypeColor(
+                                                        history.transactionType,
+                                                      ).withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  border: Border.all(
+                                                    color:
+                                                        _getTransactionTypeColor(
+                                                          history
+                                                              .transactionType,
+                                                        ),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      _getTransactionTypeIcon(
+                                                        history.transactionType,
+                                                      ),
+                                                      size: 16,
+                                                      color:
+                                                          _getTransactionTypeColor(
+                                                            history
+                                                                .transactionType,
+                                                          ),
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      history.transactionType,
+                                                      style: TextStyle(
+                                                        color: _getTransactionTypeColor(
+                                                          history
+                                                              .transactionType,
+                                                        ),
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Text(
+                                                history.transactionType ==
+                                                        "WARRANTY_USAGE"
+                                                    ? '-₹${history.amount}'
+                                                    : '₹${history.amount}',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      _getTransactionTypeColor(
+                                                        history.transactionType,
+                                                      ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+
+                                          const SizedBox(height: 16),
+
+                                          // Customer Information
+                                          if (history.transactionType ==
+                                              "WARRANTY_USAGE")
+                                            _buildInfoRow(
+                                              'Customer Name',
+                                              history
+                                                      .customerDetails
+                                                      ?.customerName ??
+                                                  'n/a',
+                                              Icons.person,
+                                            ),
+
+                                          const SizedBox(height: 8),
+
+                                          // Warranty Key
+                                          if (history.transactionType ==
+                                              "WARRANTY_USAGE")
+                                            _buildInfoRow(
+                                              'Warranty Key',
+                                              history.warrantyKey ?? 'n/a',
+                                              Icons.vpn_key,
+                                            ),
+
+                                          if (history.transactionType ==
+                                              "ALLOCATION")
+                                            _buildInfoRow(
+                                              'Transaction Id',
+                                              history.transactionId,
+                                              Icons.vpn_key,
+                                            ),
+
+                                          const SizedBox(height: 8),
+
+                                          // User Types Row
+                                          Row(
+                                            children: [
+                                              if (history.transactionType ==
+                                                  "ALLOCATION")
+                                                Expanded(
+                                                  child: _buildInfoRow(
+                                                    'From',
+                                                    history.fromUser != null
+                                                        ? history.fromUser!.name
+                                                        : 'n/a',
+                                                    Icons.person_outline,
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          if (history.notes != null &&
+                                              history.notes!.isNotEmpty)
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      if (history.notes !=
+                                                              null &&
+                                                          history
+                                                              .notes!
+                                                              .isNotEmpty) {
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (
+                                                            BuildContext
+                                                            context,
+                                                          ) {
+                                                            return AlertDialog(
+                                                              backgroundColor:
+                                                                  Color(
+                                                                    0xff202020,
+                                                                  ),
+                                                              shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      18,
+                                                                    ),
+                                                                side: const BorderSide(
+                                                                  color: Color(
+                                                                    0xFFdccf7b,
+                                                                  ), // Yellow border
+                                                                  width: 1,
+                                                                ),
+                                                              ),
+                                                              title: const Text(
+                                                                'Notes',
+                                                                style: TextStyle(
+                                                                  color: Color(
+                                                                    0xFFdccf7b,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              content: Column(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  const Divider(
+                                                                    color: Color(
+                                                                      0xFFdccf7b,
+                                                                    ),
+                                                                    thickness:
+                                                                        1,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 18,
+                                                                  ),
+                                                                  SingleChildScrollView(
+                                                                    child: Text(
+                                                                      history
+                                                                          .notes!,
+                                                                      style: const TextStyle(
+                                                                        color:
+                                                                            Colors.white,
+                                                                        fontSize:
+                                                                            14,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              actions: [
+                                                                TextButton(
+                                                                  style: TextButton.styleFrom(
+                                                                    backgroundColor:
+                                                                        const Color(
+                                                                          0xFFdccf7b,
+                                                                        ), 
+                                                                    foregroundColor:
+                                                                        Colors
+                                                                            .black, 
+                                                                    padding: const EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          16,
+                                                                      vertical:
+                                                                          8,
+                                                                    ),
+                                                                    shape: RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                            6,
+                                                                          ),
+                                                                    ),
+                                                                  ),
+                                                                  child: const Text(
+                                                                    'Close',
+                                                                    style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                  onPressed:
+                                                                      () =>
+                                                                          Navigator.of(
+                                                                            context,
+                                                                          ).pop(),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
+                                                      }
+                                                    },
+                                                    child: _buildInfoRow(
+                                                      'Notes',
+                                                      history.notes ?? "n/a",
+                                                      Icons.notes,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+
+                                          const SizedBox(height: 12),
+
+                                          // Date
+                                          Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[600],
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.schedule,
+                                                  size: 16,
+                                                  color: Colors.white,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  _formatDate(
+                                                    history.transactionDate,
+                                                  ),
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
   Widget _buildInfoRow(String label, String value, IconData icon) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -681,6 +822,8 @@ Widget build(BuildContext context) {
               const SizedBox(height: 2),
               Text(
                 value,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

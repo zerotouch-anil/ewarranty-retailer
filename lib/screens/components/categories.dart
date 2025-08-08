@@ -13,11 +13,18 @@ class CategoriesComponent extends StatefulWidget {
 
 class _CategoriesComponentState extends State<CategoriesComponent> {
   late Future<List<Categories>> _categoriesFuture;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _categoriesFuture = fetchCategories();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   // Calculate dynamic row count based on categories length
@@ -30,15 +37,15 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
 
   // Calculate dynamic height based on row count
   double _calculateHeight(int rowCount) {
-    const double itemHeight = 70.0;
+    const double itemHeight = 60.0;
     const double spacing = 5.0;
     return (itemHeight * rowCount) + (spacing * (rowCount - 1)) + 20;
   }
 
   int _calculateVisibleColumns(double containerWidth) {
-    const double itemWidth = 90.0; 
+    const double itemWidth = 90.0;
     const double spacing = 12.0;
-    return ((containerWidth - 24) / (itemWidth + spacing)).floor(); 
+    return ((containerWidth - 24) / (itemWidth + spacing)).floor();
   }
 
   @override
@@ -51,53 +58,93 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
         } else if (snapshot.hasError) {
           return Center(child: Text("Error: ${snapshot.error}"));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text("No categories available"));
+          return const Center(
+            child: Text(
+              "No categories available",
+              style: TextStyle(
+                color: Color(0xFFdccf7b),
+                fontSize: 20,
+              ),
+            ),
+          );
         }
 
         final categories = snapshot.data!;
         final rowCount = _calculateRowCount(categories.length);
-        final containerHeight = _calculateHeight(rowCount);
 
         return Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: Text(
-                  'Categories',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFdccf7b),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                    child: Text(
+                      'Add Customer',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFdccf7b),
+                      ),
+                    ),
                   ),
-                ),
+                  Divider(color: Colors.grey[800], thickness: 1, height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                    child: Text(
+                      'Available Categories',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ),
+                ],
               ),
+
               const SizedBox(height: 12),
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final visibleColumns = _calculateVisibleColumns(constraints.maxWidth);
+                    final visibleColumns = _calculateVisibleColumns(
+                      constraints.maxWidth,
+                    );
                     final maxVisibleItems = rowCount * visibleColumns;
                     final needsScrolling = categories.length > maxVisibleItems;
-                    
-                    return GridView.builder(
-                      scrollDirection: Axis.horizontal,
-                      physics: needsScrolling 
-                          ? const BouncingScrollPhysics() 
-                          : const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: rowCount,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 0.8,
+
+                    return RawScrollbar(
+                      controller: _scrollController,
+                      thumbVisibility: true,
+                      thickness: 3,
+                      radius: const Radius.circular(20),
+                      thumbColor: const Color(0xFFdccf7b),
+
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: GridView.builder(
+                          scrollDirection: Axis.vertical,
+                          physics:
+                              needsScrolling
+                                  ? const BouncingScrollPhysics()
+                                  : const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: rowCount,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 1,
+                              ),
+                          itemCount: categories.length,
+                          itemBuilder: (context, index) {
+                            final category = categories[index];
+                            return _buildCategoryItem(category);
+                          },
+                        ),
                       ),
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        return _buildCategoryItem(category);
-                      },
                     );
                   },
                 ),
@@ -115,11 +162,12 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => CustomerForm(
-              categoryId: category.categoryId,
-              categoryName: category.categoryName,
-              percentList: category.percentList,
-            ),
+            builder:
+                (_) => CustomerForm(
+                  categoryId: category.categoryId,
+                  categoryName: category.categoryName,
+                  percentList: category.percentList,
+                ),
           ),
         );
       },
@@ -144,7 +192,7 @@ class _CategoriesComponentState extends State<CategoriesComponent> {
             ),
             const SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.only(left: 5, right:5),
+              padding: const EdgeInsets.only(left: 5, right: 5),
               child: Text(
                 category.categoryName,
                 style: const TextStyle(
